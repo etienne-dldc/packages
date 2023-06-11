@@ -70,13 +70,13 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage): 
       tslib: '^2.5.3',
       tsup: '^6.7.0',
       typescript: '^5.1.3',
+      ...(pkg.additionalDevDependencies ?? {}),
     },
     packageManager: 'pnpm@8.6.1',
     publishConfig: {
       access: 'public',
       registry: 'https://registry.npmjs.org',
     },
-
     'release-it': {
       hooks: {
         'before:init': ['pnpm test', pkg.deno ? 'pnpm run build:deno' : null].filter(Boolean),
@@ -87,6 +87,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage): 
       github: {
         release: true,
         web: true,
+        autoGenerate: true,
       },
     },
   };

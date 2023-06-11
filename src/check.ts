@@ -7,6 +7,7 @@ import sortPackageJson from 'sort-package-json';
 import { $ } from 'zx';
 import { IPackage, packages } from './packages';
 import { confirm } from './prompts/confirm';
+import { Option, select } from './prompts/select';
 import { copyAll } from './utils/copyAll';
 import { createPackageJson } from './utils/createPackageJson';
 import { saveFile } from './utils/saveFile';
@@ -14,7 +15,20 @@ import { saveFile } from './utils/saveFile';
 main().catch(console.error);
 
 async function main() {
-  for (const pkg of packages) {
+  const selected = await select<Option<number | string>[], number | string>({
+    message: 'Select packages to check',
+    options: [
+      { value: 'all', label: 'All' },
+      ...packages.map((pkg, index) => ({
+        value: index,
+        label: `${pkg.org}/${pkg.name}`,
+      })),
+    ],
+  });
+
+  const selectedPackages = selected === 'all' ? packages : [packages[selected as number]];
+
+  for (const pkg of selectedPackages) {
     await checkPackage(pkg);
   }
 }
@@ -70,6 +84,11 @@ async function checkPackage(pkg: IPackage) {
   // copy all files from template
   const templateFolder = resolve('templates/base');
   await copyAll(templateFolder, folder);
+  // copy files from custom/package
+  const customPackageFolder = resolve('templates/custom', pkg.name);
+  if (existsSync(customPackageFolder)) {
+    await copyAll(customPackageFolder, folder);
+  }
   // create package.json
   const newPackageJson = createPackageJson(prevPackageJson, pkg);
   await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
@@ -81,13 +100,26 @@ async function checkPackage(pkg: IPackage) {
     log(`Building deno`);
     await $`pnpm run build:deno`;
   }
+
+  let buildSuccess = true;
+  try {
+    log(`Building`);
+    await $`pnpm run build`;
+  } catch (error) {
+    buildSuccess = false;
+    log(`${pc.red('◆')} Build failed`);
+  }
+
+  let testSuccess = true;
   try {
     log(`Running tests`);
     await $`pnpm test`;
   } catch (error) {
+    testSuccess = false;
     log(`${pc.red('◆')} Tests failed`);
   }
-  if (!(await isClean())) {
+
+  if (!(await isClean()) || !testSuccess || !buildSuccess) {
     log(`${pc.red('◆')} Not clean`);
     log(`Opennning ${pkgName} in VSCode`);
     await $`code ${folder}`;
