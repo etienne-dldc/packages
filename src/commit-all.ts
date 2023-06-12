@@ -28,7 +28,7 @@ async function commitPackage(pkg: IPackage, message: string) {
   }
   log(`Committing ${pkgName}`);
   await $`git add --all`;
-  await $`git commit -m "${message}"`;
+  await $`git commit -m ${message}`;
   await $`git push`;
   log(`${pc.blue('●')} Committed and pushed`);
 }
