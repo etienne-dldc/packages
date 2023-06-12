@@ -1,32 +1,23 @@
 import { existsSync } from 'fs';
 import { readJson } from 'fs-extra';
 import { readdir, rm } from 'fs/promises';
-import { relative, resolve } from 'path';
+import { resolve } from 'path';
 import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
 import { $ } from 'zx';
-import { IPackage, packages } from './packages';
+import { IPackage } from './packages';
 import { confirm } from './prompts/confirm';
-import { Option, select } from './prompts/select';
 import { copyAll } from './utils/copyAll';
 import { createPackageJson } from './utils/createPackageJson';
+import { createTsconfig } from './utils/createTsconfig';
+import { pkgUtils } from './utils/pkgUtils';
 import { saveFile } from './utils/saveFile';
+import { selectPackages } from './utils/selectPackages';
 
 main().catch(console.error);
 
 async function main() {
-  const selected = await select<Option<number | string>[], number | string>({
-    message: 'Select packages to check',
-    options: [
-      { value: 'all', label: 'All' },
-      ...packages.map((pkg, index) => ({
-        value: index,
-        label: `${pkg.org}/${pkg.name}`,
-      })),
-    ],
-  });
-
-  const selectedPackages = selected === 'all' ? packages : [packages[selected as number]];
+  const selectedPackages = await selectPackages();
 
   for (const pkg of selectedPackages) {
     await checkPackage(pkg);
@@ -36,15 +27,8 @@ async function main() {
 const KEEP_FILES = ['.git', 'src', 'tests', 'README.md', 'pnpm-lock.yaml', 'design'];
 
 async function checkPackage(pkg: IPackage) {
-  const pkgName = `${pc.blue(pkg.org)}/${pc.green(pkg.name)}`;
-  console.log(pkgName);
-  const baseDir = resolve(`${process.env.HOME}/Workspace`);
-  const folder = resolve(baseDir, `github.com/${pkg.org}/${pkg.name}`);
-  const prefix = ` ${pc.gray('│')} `;
-  const log = (message: string) => console.log(`${prefix} ${message}`);
+  const { log, folder, relativeFolder, pkgName } = pkgUtils(pkg);
   $.verbose = false;
-  const relativeFolder = relative(baseDir, folder);
-  log(`${pc.gray(folder)}`);
   if (!existsSync(folder)) {
     const shouldClone = await confirm({
       message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
@@ -66,7 +50,6 @@ async function checkPackage(pkg: IPackage) {
     log(`${pc.red('◆')} Not on main branch`);
     return;
   }
-  // is clean
   const isClean = async () => (await $`git status --porcelain`).stdout.trim() === '';
   if (!(await isClean())) {
     log(`${pc.red('◆')} Not clean`);
@@ -92,6 +75,9 @@ async function checkPackage(pkg: IPackage) {
   // create package.json
   const newPackageJson = createPackageJson(prevPackageJson, pkg);
   await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
+  // create tsconfig.json
+  const tsconfigFile = createTsconfig(pkg);
+  await saveFile(folder, 'tsconfig.json', tsconfigFile);
   log(`Installing deps`);
   await $`pnpm i`;
   log(`Running lint:fix`);
@@ -126,14 +112,4 @@ async function checkPackage(pkg: IPackage) {
     return;
   }
   log(`${pc.green('●')} All good`);
-
-  // const { didUpdateNodeVersion } = await checkNodeVersion(folder, log);
-  // const { didInstallPnpm } = await checkPnpm(folder, log);
-  // const { didRemoveJest } = await checkNoJest(folder, log);
-  // const { didAddVitest } = await checkVitest(folder, log);
-
-  // if (didUpdateNodeVersion || didInstallPnpm || didRemoveJest || didAddVitest) {
-  //   log(`Opennning ${pkgName} in VSCode`);
-  //   await $`code ${folder}`;
-  // }
 }

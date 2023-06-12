@@ -1,13 +1,9 @@
-import { SelectPrompt, State } from '@clack/core';
+import { SelectPrompt } from '@clack/core';
 import pc from 'picocolors';
+import { symbol } from './symbol';
 
 const RADIO_ACTIVE = '●';
 const RADIO_INACTIVE = '○';
-
-const STEP_ACTIVE = '◆';
-const STEP_CANCEL = '■';
-const STEP_ERROR = '▲';
-const STEP_SUBMIT = '◇';
 
 export type Primitive = Readonly<string | boolean | number>;
 
@@ -20,20 +16,6 @@ export interface SelectOptions<Options extends Option<Value>[], Value> {
   options: Options;
   initialValue?: Value;
 }
-
-const symbol = (state: State) => {
-  switch (state) {
-    case 'initial':
-    case 'active':
-      return pc.cyan(STEP_ACTIVE);
-    case 'cancel':
-      return pc.red(STEP_CANCEL);
-    case 'error':
-      return pc.yellow(STEP_ERROR);
-    case 'submit':
-      return pc.green(STEP_SUBMIT);
-  }
-};
 
 export const select = <Options extends Option<Value>[], Value>(opts: SelectOptions<Options, Value>) => {
   const opt = (option: Option<Value>, state: 'inactive' | 'active' | 'selected' | 'cancelled') => {

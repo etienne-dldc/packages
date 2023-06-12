@@ -44,7 +44,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage): 
     files: ['dist'],
     scripts: {
       build: 'rimraf dist && tsup --format cjs,esm src/mod.ts --dts src/mod.ts',
-      ...(pkg.deno ? { 'build:deno': 'rimraf deno_dist && denoify' } : {}),
+      ...(pkg.deno ? { 'build:deno': 'rimraf deno && denoify --out deno' } : {}),
       lint: 'prettier . --check && eslint . && tsc --noEmit',
       'lint:fix': 'prettier . --write . && eslint . --fix',
       release: 'release-it',
@@ -56,7 +56,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage): 
     },
     dependencies: prevPackageJson.dependencies,
     devDependencies: {
-      '@types/node': '^20.3.0',
+      ...(pkg.browser ? {} : { '@types/node': '^20.3.0' }),
       '@vitest/coverage-v8': '^0.32.0',
       vitest: '^0.32.0',
       '@typescript-eslint/eslint-plugin': '^5.59.9',
