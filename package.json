@@ -4,7 +4,9 @@
   "description": "List and manage all my packages",
   "scripts": {
     "check": "tsx ./src/check.ts",
-    "commit-all": "tsx ./src/commit-all.ts"
+    "commit-all": "tsx ./src/commit-all.ts",
+    "typecheck": "tsc",
+    "typecheck:watch": "tsc --watch"
   },
   "license": "MIT",
   "author": "Etienne Dldc <e.deladonchamps@gmail.com>",

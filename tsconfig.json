@@ -15,6 +15,7 @@
     "noImplicitReturns": true,
     "isolatedModules": false,
     "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   }
 }

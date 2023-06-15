@@ -82,10 +82,6 @@ async function checkPackage(pkg: IPackage) {
   await $`pnpm i`;
   log(`Running lint:fix`);
   await $`pnpm run lint:fix`;
-  if (pkg.deno) {
-    log(`Building deno`);
-    await $`pnpm run build:deno`;
-  }
 
   let buildSuccess = true;
   try {
