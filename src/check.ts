@@ -24,9 +24,18 @@ async function main() {
   }
 }
 
-const KEEP_FILES = ['.git', 'src', 'tests', 'README.md', 'pnpm-lock.yaml', 'design'];
-
 async function checkPackage(pkg: IPackage) {
+  const forceInstall = false;
+  const KEEP_FILES = [
+    '.git',
+    'src',
+    'tests',
+    'README.md',
+    'pnpm-lock.yaml',
+    'design',
+    forceInstall ? null : 'node_modules',
+  ].filter(Boolean);
+
   const { log, folder, relativeFolder, pkgName } = pkgUtils(pkg);
   $.verbose = false;
   if (!existsSync(folder)) {
