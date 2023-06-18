@@ -7,6 +7,10 @@ export interface IPackage {
   readonly browser?: boolean;
 }
 
+export type Packages = readonly IPackage[];
+
+export type PackageName = (typeof packages)[number]['name'];
+
 export const packages = [
   {
     org: 'etienne-dldc',
@@ -46,4 +50,4 @@ export const packages = [
   { org: 'etienne-dldc', name: 'erreur' },
   { org: 'etienne-dldc', name: 'suub' },
   { org: 'etienne-dldc', name: 'zenjson' },
-] as const satisfies readonly IPackage[];
+] as const satisfies Packages;

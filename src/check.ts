@@ -1,3 +1,4 @@
+import { confirm } from '@inquirer/prompts';
 import { existsSync } from 'fs';
 import { readJson } from 'fs-extra';
 import { readdir, rm } from 'fs/promises';
@@ -6,7 +7,6 @@ import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
 import { $ } from 'zx';
 import { IPackage } from './packages';
-import { confirm } from './prompts/confirm';
 import { copyAll } from './utils/copyAll';
 import { createPackageJson } from './utils/createPackageJson';
 import { createTsconfig } from './utils/createTsconfig';
