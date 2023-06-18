@@ -5,6 +5,8 @@ export interface IPackage {
   readonly org: Org;
   readonly additionalDevDependencies?: Record<string, string>;
   readonly browser?: boolean;
+  readonly react?: boolean; // add eslint-plugin-react-hooks, enable jsx in tsconfig
+  readonly viteExample?: boolean; // example folder with vite
 }
 
 export type Packages = readonly IPackage[];
@@ -50,4 +52,14 @@ export const packages = [
   { org: 'etienne-dldc', name: 'erreur' },
   { org: 'etienne-dldc', name: 'suub' },
   { org: 'etienne-dldc', name: 'zenjson' },
+  { org: 'etienne-dldc', name: 'chemin' },
+  { org: 'etienne-dldc', name: 'democrat', react: true },
+  {
+    org: 'etienne-dldc',
+    name: 'react-formi',
+    react: true,
+    viteExample: true,
+    browser: true,
+    additionalDevDependencies: { '@types/use-sync-external-store': '^0.0.3', zod: '^3.21.4' },
+  },
 ] as const satisfies Packages;

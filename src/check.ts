@@ -8,6 +8,7 @@ import sortPackageJson from 'sort-package-json';
 import { $ } from 'zx';
 import { IPackage } from './packages';
 import { copyAll } from './utils/copyAll';
+import { createEslintConfig } from './utils/createEslintConfig';
 import { createPackageJson } from './utils/createPackageJson';
 import { createTsconfig } from './utils/createTsconfig';
 import { pkgUtils } from './utils/pkgUtils';
@@ -26,6 +27,7 @@ async function main() {
 
 async function checkPackage(pkg: IPackage) {
   const forceInstall = false;
+
   const KEEP_FILES = [
     '.git',
     'src',
@@ -34,6 +36,7 @@ async function checkPackage(pkg: IPackage) {
     'pnpm-lock.yaml',
     'design',
     forceInstall ? null : 'node_modules',
+    pkg.viteExample ? 'example' : null,
   ].filter(Boolean);
 
   const { log, folder, relativeFolder, pkgName } = pkgUtils(pkg);
@@ -86,7 +89,10 @@ async function checkPackage(pkg: IPackage) {
   await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
   // create tsconfig.json
   const tsconfigFile = createTsconfig(pkg);
-  await saveFile(folder, 'tsconfig.json', tsconfigFile);
+  await saveFile(folder, 'tsconfig.json', JSON.stringify(tsconfigFile, null, 2));
+  // Create .eslintrc.json
+  const eslintConfig = createEslintConfig(pkg);
+  await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
   log(`Installing deps`);
   await $`pnpm i`;
   log(`Running lint:fix`);
