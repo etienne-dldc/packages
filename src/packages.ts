@@ -62,4 +62,5 @@ export const packages = [
     browser: true,
     additionalDevDependencies: { '@types/use-sync-external-store': '^0.0.3', zod: '^3.21.4' },
   },
+  { org: 'etienne-dldc', name: 'zen-serve' },
 ] as const satisfies Packages;
