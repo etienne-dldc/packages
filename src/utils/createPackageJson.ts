@@ -84,7 +84,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage): 
     },
     'release-it': {
       hooks: {
-        'before:init': 'pnpm test',
+        'before:init': ['pnpm run build', 'pnpm test'],
       },
       npm: {
         publish: true,
@@ -95,5 +95,6 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage): 
         autoGenerate: true,
       },
     },
+    
   };
 }

@@ -2,20 +2,21 @@
   "name": "packages",
   "version": "1.0.0",
   "description": "List and manage all my packages",
-  "scripts": {
-    "check": "tsx ./src/check.ts",
-    "commit-all": "tsx ./src/commit-all.ts",
-    "typecheck": "tsc",
-    "typecheck:watch": "tsc --watch"
-  },
-  "license": "MIT",
-  "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
   "bugs": {
     "url": "https://github.com/etienne-dldc/packages/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/etienne-dldc/packages.git"
+  },
+  "license": "MIT",
+  "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
+  "scripts": {
+    "check": "tsx ./src/check.ts",
+    "commit-all": "tsx ./src/commit-all.ts",
+    "reset-all": "tsx ./src/reset-all.ts",
+    "typecheck": "tsc",
+    "typecheck:watch": "tsc --watch"
   },
   "dependencies": {
     "@clack/core": "^0.3.2",

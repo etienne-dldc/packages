@@ -11,6 +11,7 @@ import { copyAll } from './utils/copyAll';
 import { createEslintConfig } from './utils/createEslintConfig';
 import { createPackageJson } from './utils/createPackageJson';
 import { createTsconfig } from './utils/createTsconfig';
+import { ILogger, Logger } from './utils/logger';
 import { pkgUtils } from './utils/pkgUtils';
 import { saveFile } from './utils/saveFile';
 import { selectPackages } from './utils/selectPackages';
@@ -20,12 +21,26 @@ main().catch(console.error);
 async function main() {
   const selectedPackages = await selectPackages();
 
-  for (const pkg of selectedPackages) {
-    await checkPackage(pkg);
+  if (selectedPackages.length === 1) {
+    const pkg = selectedPackages[0];
+    await checkPackage(pkg, false);
+    return;
+  }
+
+  await Promise.all(selectedPackages.map((pkg) => checkPackage(pkg, true)));
+  console.log('\nDone');
+}
+
+async function checkPackage(pkg: IPackage, deffered: boolean) {
+  const logger = Logger.create({ deffered });
+  await doCheckPackage(logger, pkg);
+  if (deffered) {
+    logger.commit();
   }
 }
 
-async function checkPackage(pkg: IPackage) {
+async function doCheckPackage(parentLogger: ILogger, pkg: IPackage) {
+  const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
   const forceInstall = false;
 
   const KEEP_FILES = [
@@ -39,33 +54,36 @@ async function checkPackage(pkg: IPackage) {
     pkg.viteExample ? 'example' : null,
   ].filter(Boolean);
 
-  const { log, folder, relativeFolder, pkgName } = pkgUtils(pkg);
+  parentLogger.log(pkgName);
+  const logger = parentLogger.withPrefix(prefix);
+  logger.log(`${pc.gray(folder)}`);
+
   $.verbose = false;
   if (!existsSync(folder)) {
     const shouldClone = await confirm({
       message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
     });
     if (!shouldClone) {
-      log(`Skipping ${pkgName}`);
+      logger.log(`Skipping ${pkgName}`);
       return;
     }
     const gitLink = `git@github.com:${pkg.org}/${pkg.name}.git`;
-    log(`Cloning in ${pkgName}`);
+    logger.log(`Cloning in ${pkgName}`);
     await $`git clone -- ${gitLink} ${folder}`;
-    log(`Cloned`);
+    logger.log(`Cloned`);
   }
   $.cwd = folder;
   // is main branch
   const { stdout: branch } = await $`git branch --show-current`;
-  log(`On branch ${pc.green(branch.trim())}`);
+  logger.log(`On branch ${pc.green(branch.trim())}`);
   if (branch.trim() !== 'main') {
-    log(`${pc.red('◆')} Not on main branch`);
+    logger.log(`${pc.red('◆')} Not on main branch`);
     return;
   }
   const isClean = async () => (await $`git status --porcelain`).stdout.trim() === '';
   if (!(await isClean())) {
-    log(`${pc.red('◆')} Not clean`);
-    log(`Opennning ${pkgName} in VSCode`);
+    logger.log(`${pc.red('◆')} Not clean`);
+    logger.log(`Opennning ${pkgName} in VSCode`);
     await $`code ${folder}`;
     return;
   }
@@ -93,34 +111,34 @@ async function checkPackage(pkg: IPackage) {
   // Create .eslintrc.json
   const eslintConfig = createEslintConfig(pkg);
   await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
-  log(`Installing deps`);
+  logger.log(`Installing deps`);
   await $`pnpm i`;
-  log(`Running lint:fix`);
+  logger.log(`Running lint:fix`);
   await $`pnpm run lint:fix`;
 
   let buildSuccess = true;
   try {
-    log(`Building`);
+    logger.log(`Building`);
     await $`pnpm run build`;
   } catch (error) {
     buildSuccess = false;
-    log(`${pc.red('◆')} Build failed`);
+    logger.log(`${pc.red('◆')} Build failed`);
   }
 
   let testSuccess = true;
   try {
-    log(`Running tests`);
+    logger.log(`Running tests`);
     await $`pnpm test`;
   } catch (error) {
     testSuccess = false;
-    log(`${pc.red('◆')} Tests failed`);
+    logger.log(`${pc.red('◆')} Tests failed`);
   }
 
   if (!(await isClean()) || !testSuccess || !buildSuccess) {
-    log(`${pc.red('◆')} Not clean`);
-    log(`Opennning ${pkgName} in VSCode`);
+    logger.log(`${pc.red('◆')} Not clean`);
+    logger.log(`Opennning ${pkgName} in VSCode`);
     await $`code ${folder}`;
     return;
   }
-  log(`${pc.green('●')} All good`);
+  logger.log(`${pc.green('●')} All good`);
 }
