@@ -27,15 +27,27 @@ async function main() {
     return;
   }
 
-  await Promise.all(selectedPackages.map((pkg) => checkPackage(pkg, true)));
+  await Promise.all(
+    selectedPackages.map(async (pkg, index) => {
+      await new Promise((resolve) => setTimeout(resolve, index * 100));
+      await checkPackage(pkg, true);
+    })
+  );
   console.log('\nDone');
 }
 
 async function checkPackage(pkg: IPackage, deffered: boolean) {
   const logger = Logger.create({ deffered });
-  await doCheckPackage(logger, pkg);
-  if (deffered) {
-    logger.commit();
+  try {
+    await doCheckPackage(logger, pkg);
+    if (deffered) {
+      logger.commit();
+    }
+  } catch (error) {
+    if (deffered) {
+      logger.commit();
+    }
+    console.error(error);
   }
 }
 
