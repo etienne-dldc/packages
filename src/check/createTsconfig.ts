@@ -1,13 +1,13 @@
-import { IPackage } from '../packages';
+import { IConfig } from '../utils/loadConfig';
 
-export function createTsconfig(pkg: IPackage): any {
+export function createTsconfig(config: IConfig): any {
   return {
     $schema: 'https://json.schemastore.org/tsconfig',
     include: ['src', 'tests'],
     compilerOptions: {
       target: 'ESNext',
       module: 'ES2020',
-      lib: pkg.browser ? ['ESNext', 'DOM', 'DOM.Iterable'] : ['ESNext'],
+      lib: config.browser ? ['ESNext', 'DOM', 'DOM.Iterable'] : ['ESNext'],
       importHelpers: true,
       declaration: true,
       sourceMap: true,
@@ -24,8 +24,8 @@ export function createTsconfig(pkg: IPackage): any {
       noFallthroughCasesInSwitch: true,
       moduleResolution: 'node',
       esModuleInterop: true,
-      ...(pkg.browser ? {} : { skipLibCheck: true }), // required because esbuild would need 'DOM' lib
-      ...(pkg.react ? { jsx: 'react-jsx' } : {}),
+      ...(config.browser ? {} : { skipLibCheck: true }), // required because esbuild would need 'DOM' lib
+      ...(config.react ? { jsx: 'react-jsx' } : {}),
     },
   };
 }

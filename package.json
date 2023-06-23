@@ -13,6 +13,8 @@
   "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
   "scripts": {
     "check": "tsx ./src/check.ts",
+    "check:all": "tsx ./src/check.ts --all",
+    "check:all-sequence": "tsx ./src/check.ts --all --sequence",
     "commit-all": "tsx ./src/commit-all.ts",
     "reset-all": "tsx ./src/reset-all.ts",
     "typecheck": "tsc",
@@ -27,6 +29,7 @@
     "@types/node": "^20.3.1",
     "@types/prettier": "^2.7.3",
     "@types/prompts": "^2.4.4",
+    "@types/yargs": "^17.0.24",
     "enquirer": "^2.3.6",
     "fs-extra": "^11.1.1",
     "picocolors": "^1.0.0",
@@ -37,6 +40,8 @@
     "tslib": "^2.5.3",
     "tsx": "^3.12.7",
     "typescript": "^5.1.3",
+    "yargs": "^17.7.2",
+    "zod": "^3.21.4",
     "zx": "^7.2.2"
   },
   "devDependencies": {

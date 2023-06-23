@@ -1,11 +1,14 @@
 import { select } from '@inquirer/prompts';
 import { PackageName, packages } from '../packages';
 
-export async function selectPackages() {
+export async function selectPackages(all: boolean) {
+  if (all) {
+    return packages;
+  }
+
   const selected = await select<PackageName | 'all'>({
     message: 'Select packages to check',
     choices: [
-      { value: 'all', name: 'All' },
       ...packages.map((pkg) => ({
         value: pkg.name,
         name: `${pkg.org}/${pkg.name}`,
@@ -13,7 +16,5 @@ export async function selectPackages() {
     ],
   });
 
-  const selectedPackages = selected === 'all' ? packages : packages.filter((pkg) => pkg.name === selected);
-
-  return selectedPackages;
+  return packages.filter((pkg) => pkg.name === selected);
 }

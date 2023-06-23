@@ -1,6 +1,6 @@
-import { IPackage } from '../packages';
+import { IConfig } from '../utils/loadConfig';
 
-export function createEslintConfig(pkg: IPackage): any {
+export function createEslintConfig(config: IConfig): any {
   return {
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -11,7 +11,7 @@ export function createEslintConfig(pkg: IPackage): any {
       'eslint:recommended',
       'plugin:@typescript-eslint/recommended',
       'prettier',
-      pkg.react ? 'plugin:react-hooks/recommended' : null,
+      config.react ? 'plugin:react-hooks/recommended' : null,
     ].filter(Boolean),
     root: true,
     rules: {
