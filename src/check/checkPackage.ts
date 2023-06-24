@@ -15,6 +15,7 @@ import { saveFile } from '../utils/saveFile';
 import { createEslintConfig } from './createEslintConfig';
 import { createPackageJson } from './createPackageJson';
 import { createTsconfig } from './createTsconfig';
+import { createVitestConfig } from './createVitestConfig';
 
 export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
@@ -82,13 +83,8 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
     await rm(resolve(folder, file), { recursive: true, force: true });
   }
   // copy all files from template
-  const templateFolder = resolve('templates/base');
+  const templateFolder = resolve('templates');
   await copyAll(templateFolder, folder);
-  // copy files from custom/package
-  const customPackageFolder = resolve('templates/custom', pkg.name);
-  if (existsSync(customPackageFolder)) {
-    await copyAll(customPackageFolder, folder);
-  }
   // create package.json
   const newPackageJson = createPackageJson(prevPackageJson, pkg, config);
   await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
@@ -98,6 +94,9 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
   // Create .eslintrc.json
   const eslintConfig = createEslintConfig(config);
   await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
+  // Create vitest.config.ts
+  const vitestConfig = createVitestConfig(config);
+  await saveFile(folder, 'vitest.config.ts', vitestConfig);
   logger.log(`Installing deps`);
   await $`pnpm i`;
   logger.log(`Running lint:fix`);

@@ -10,6 +10,10 @@ const ConfigSchema = z.object({
   browser: z.boolean().optional(), // Add types for browser (DOM)
   react: z.boolean().optional(), // add eslint-plugin-react-hooks, enable jsx in tsconfig
   viteExample: z.boolean().optional(), // example folder with vite
+  vitestSetupFile: z.boolean().optional(), // add setup file for vitest
+  // disable threads for vitest (used by draaw)
+  // needed for canvas https://github.com/vitest-dev/vitest/issues/740
+  vitestNoThreads: z.boolean().optional(),
 });
 
 export type IConfig = Required<z.infer<typeof ConfigSchema>>;
@@ -19,6 +23,8 @@ const DEFAULT_CONFIG: IConfig = {
   browser: false,
   react: false,
   viteExample: false,
+  vitestSetupFile: false,
+  vitestNoThreads: false,
 };
 
 export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig> {
