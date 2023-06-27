@@ -72,6 +72,9 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   }
 
   const config = await loadConfig(logger, folder);
+  if (!config) {
+    return { success: false, pkg };
+  }
 
   const KEEP_FILES = [
     '.git',

@@ -25,7 +25,7 @@ const DEFAULT_CONFIG: IConfig = {
   vitestNoThreads: false,
 };
 
-export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig> {
+export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig | null> {
   const configPath = resolve(folder, 'config.json');
   if (!existsSync(configPath)) {
     return {
@@ -38,6 +38,7 @@ export async function loadConfig(logger: ILogger, folder: string): Promise<IConf
     return { ...DEFAULT_CONFIG, ...config };
   } catch (error) {
     logger.log(`${pc.red('◆')} Error loading config file`);
-    throw error;
+    logger.log((error as z.ZodError).message);
+    return null;
   }
 }
