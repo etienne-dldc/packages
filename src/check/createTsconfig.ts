@@ -24,6 +24,7 @@ export function createTsconfig(config: IConfig): any {
       noFallthroughCasesInSwitch: true,
       moduleResolution: 'node',
       esModuleInterop: true,
+      types: [],
       ...(config.react ? { jsx: 'react-jsx' } : {}),
     },
   };

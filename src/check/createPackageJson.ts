@@ -64,7 +64,6 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       '@typescript-eslint/parser': '^5.59.11',
       eslint: '^8.42.0',
       'eslint-config-prettier': '^8.8.0',
-      ...(config.react ? { 'eslint-plugin-react-hooks': '^4.6.0' } : {}),
       prettier: '^2.8.8',
       'release-it': '^15.11.0',
       rimraf: '^5.0.1',
@@ -75,8 +74,20 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       vitest: '^0.32.0',
       ...(config.additionalDevDependencies ?? {}),
       ...(config.react
-        ? { '@types/react': '^18.2.12', '@types/react-dom': '^18.2.5', react: '^18.2.0', 'react-dom': '^18.2.0' }
-        : {}),
+        ? {
+            'eslint-plugin-react-hooks': '^4.6.0',
+            '@testing-library/jest-dom': '^5.16.5',
+            '@testing-library/react': '^14.0.0',
+            '@testing-library/user-event': '^14.4.3',
+            '@types/testing-library__jest-dom': '^5.14.6',
+            jsdom: '^22.1.0',
+            '@types/react': '^18.2.12',
+            '@types/react-dom': '^18.2.5',
+            react: '^18.2.0',
+            'react-dom': '^18.2.0',
+            '@vitejs/plugin-react': '^4.0.1',
+          }
+        : undefined),
     },
     packageManager: 'pnpm@8.6.1',
     publishConfig: {
