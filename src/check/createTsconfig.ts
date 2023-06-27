@@ -7,7 +7,7 @@ export function createTsconfig(config: IConfig): any {
     compilerOptions: {
       target: 'ESNext',
       module: 'ES2020',
-      lib: config.browser ? ['ESNext', 'DOM', 'DOM.Iterable'] : ['ESNext'],
+      lib: ['ESNext', 'DOM', 'DOM.Iterable'],
       importHelpers: true,
       declaration: true,
       sourceMap: true,
@@ -24,7 +24,6 @@ export function createTsconfig(config: IConfig): any {
       noFallthroughCasesInSwitch: true,
       moduleResolution: 'node',
       esModuleInterop: true,
-      ...(config.browser ? {} : { skipLibCheck: true }), // required because esbuild would need 'DOM' lib
       ...(config.react ? { jsx: 'react-jsx' } : {}),
     },
   };

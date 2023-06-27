@@ -1,5 +1,5 @@
+import { $ } from 'execa';
 import pc from 'picocolors';
-import { $ } from 'zx';
 import { IPackage, packages } from './packages';
 import { Logger } from './utils/logger';
 import { pkgUtils } from './utils/pkgUtils';
@@ -18,14 +18,13 @@ async function resetPackage(pkg: IPackage) {
   logger.log(pkgName);
   const subLogger = logger.withPrefix(prefix);
   subLogger.log(`${pc.gray(folder)}`);
-  $.verbose = false;
-  $.cwd = folder;
-  const isClean = async () => (await $`git status --porcelain`).stdout.trim() === '';
+  const $$ = $({ cwd: folder, verbose: false });
+  const isClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
   if (await isClean()) {
     subLogger.log(`${pc.green('●')} No changes`);
     return;
   }
   subLogger.log(`Resetting ${pkgName}`);
-  await $`git reset --hard`;
+  await $$`git reset --hard`;
   subLogger.log(`${pc.blue('●')} Reset`);
 }

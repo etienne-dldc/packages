@@ -1,11 +1,11 @@
 import { confirm } from '@inquirer/prompts';
+import { $ } from 'execa';
 import { existsSync } from 'fs';
 import { readJson } from 'fs-extra';
 import { readdir, rm } from 'fs/promises';
 import { resolve } from 'path';
 import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
-import { $ } from 'zx';
 import { IPackage } from '../packages';
 import { copyAll } from '../utils/copyAll';
 import { loadConfig } from '../utils/loadConfig';
@@ -17,33 +17,58 @@ import { createPackageJson } from './createPackageJson';
 import { createTsconfig } from './createTsconfig';
 import { createVitestConfig } from './createVitestConfig';
 
-export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
+export type CheckResult = { success: boolean; pkg: IPackage };
+
+export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interactive: boolean): Promise<CheckResult> {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
   if (pkg.deprecated) {
     parentLogger.log(`Skipping ${pkgName} (deprecated)`);
-    return;
+    return { success: true, pkg };
   }
 
   const forceInstall = false;
-  const checkCleanBefore = false;
+  const checkCleanBefore = true;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);
   logger.log(`${pc.gray(folder)}`);
 
-  $.verbose = false;
   if (!existsSync(folder)) {
-    const shouldClone = await confirm({
-      message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
-    });
+    const shouldClone =
+      interactive &&
+      (await confirm({
+        message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
+      }));
     if (!shouldClone) {
       logger.log(`Skipping ${pkgName}`);
-      return;
+      return { success: false, pkg };
     }
     const gitLink = `git@github.com:${pkg.org}/${pkg.name}.git`;
     logger.log(`Cloning in ${pkgName}`);
-    await $`git clone -- ${gitLink} ${folder}`;
+    await $({ verbose: false })`git clone -- ${gitLink} ${folder}`;
     logger.log(`Cloned`);
+  }
+
+  const $$ = $({ cwd: folder, verbose: false });
+
+  // is main branch
+  const { stdout: branch } = await $$`git branch --show-current`;
+  logger.log(`On branch ${pc.green(branch.trim())}`);
+  if (branch.trim() !== 'main') {
+    logger.log(`${pc.red('◆')} Not on main branch`);
+    return { success: false, pkg };
+  }
+  // make sure there are no uncommited changes
+  const checkIsClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
+  const isClean = await checkIsClean();
+  if (checkCleanBefore && !isClean) {
+    logger.log(`${pc.red('◆')} Not clean`);
+    return { success: false, pkg };
+  }
+  // pull latest
+  if (isClean) {
+    logger.log(`Pulling latest`);
+    await $$`git pull`;
   }
 
   const config = await loadConfig(logger, folder);
@@ -60,21 +85,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
     config.viteExample ? 'example' : null,
   ].filter(Boolean);
 
-  $.cwd = folder;
-  // is main branch
-  const { stdout: branch } = await $`git branch --show-current`;
-  logger.log(`On branch ${pc.green(branch.trim())}`);
-  if (branch.trim() !== 'main') {
-    logger.log(`${pc.red('◆')} Not on main branch`);
-    return;
-  }
-  const isClean = async () => (await $`git status --porcelain`).stdout.trim() === '';
-  if (checkCleanBefore && !(await isClean())) {
-    logger.log(`${pc.red('◆')} Not clean`);
-    logger.log(`Opennning ${pkgName} in VSCode`);
-    await $`code ${folder}`;
-    return;
-  }
+  // remove all files except for the ones we want to keep
   const allFiles = await readdir(folder);
   const filesToRemove = allFiles.filter((file) => !KEEP_FILES.includes(file));
   const prevPackageJson = await readJson(resolve(folder, 'package.json'));
@@ -98,14 +109,14 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
   const vitestConfig = createVitestConfig(config);
   await saveFile(folder, 'vitest.config.ts', vitestConfig);
   logger.log(`Installing deps`);
-  await $`pnpm i`;
+  await $$`pnpm i`;
   logger.log(`Running lint:fix`);
-  await $`pnpm run lint:fix`;
+  await $$`pnpm run lint:fix`;
 
   let buildSuccess = true;
   try {
     logger.log(`Building`);
-    await $`pnpm run build`;
+    await $$`pnpm run build`;
   } catch (error) {
     buildSuccess = false;
     logger.log(`${pc.red('◆')} Build failed`);
@@ -114,17 +125,16 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage) {
   let testSuccess = true;
   try {
     logger.log(`Running tests`);
-    await $`pnpm test`;
+    await $$`pnpm test`;
   } catch (error) {
     testSuccess = false;
     logger.log(`${pc.red('◆')} Tests failed`);
   }
 
-  if (!(await isClean()) || !testSuccess || !buildSuccess) {
+  if (!(await checkIsClean()) || !testSuccess || !buildSuccess) {
     logger.log(`${pc.red('◆')} Not clean`);
-    logger.log(`Opennning ${pkgName} in VSCode`);
-    await $`code ${folder}`;
-    return;
+    return { success: false, pkg };
   }
   logger.log(`${pc.green('●')} All good`);
+  return { success: true, pkg };
 }

@@ -58,7 +58,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
     devDependencies: {
-      ...(config.browser ? {} : { '@types/node': '^20.3.1' }),
+      '@types/node': '^20.3.1',
       '@vitest/coverage-v8': '^0.32.0',
       '@typescript-eslint/eslint-plugin': '^5.59.11',
       '@typescript-eslint/parser': '^5.59.11',
