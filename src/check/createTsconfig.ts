@@ -3,7 +3,7 @@ import { IConfig } from '../utils/loadConfig';
 export function createTsconfig(config: IConfig): any {
   return {
     $schema: 'https://json.schemastore.org/tsconfig',
-    include: ['src', 'tests', config.viteExample ? 'example' : undefined].filter(Boolean),
+    include: ['src', 'tests', config.viteExample && 'example', config.scripts && 'scripts'].filter(Boolean),
     compilerOptions: {
       target: 'ESNext',
       module: 'ES2020',

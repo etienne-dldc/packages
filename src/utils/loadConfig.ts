@@ -10,6 +10,7 @@ const ConfigSchema = z.strictObject({
   react: z.boolean().optional(), // add eslint-plugin-react-hooks, enable jsx in tsconfig
   viteExample: z.boolean().optional(), // example folder with vite
   vitestSetupFile: z.boolean().optional(), // add setup file for vitest
+  scripts: z.boolean().optional(), // add scripts to package.json (and install tsx)
   // disable threads for vitest (used by draaw)
   // needed for canvas https://github.com/vitest-dev/vitest/issues/740
   vitestNoThreads: z.boolean().optional(),
@@ -23,6 +24,7 @@ const DEFAULT_CONFIG: IConfig = {
   viteExample: false,
   vitestSetupFile: false,
   vitestNoThreads: false,
+  scripts: false,
 };
 
 export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig | null> {

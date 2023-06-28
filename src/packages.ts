@@ -35,4 +35,5 @@ export const packages = [
   { org: 'etienne-dldc', name: 'zendb' },
   { org: 'etienne-dldc', name: 'zendb-better-sqlite3' },
   { org: 'etienne-dldc', name: 'zendb-sqljs' },
+  { org: 'etienne-dldc', name: 'umbrella-common' },
 ] as const satisfies Packages;

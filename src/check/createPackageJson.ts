@@ -16,6 +16,10 @@ interface PackageJsonFixed extends PackageJson {
 }
 
 export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, config: IConfig): PackageJsonFixed {
+  const prevScriptsScripts = Object.fromEntries(
+    Object.entries(prevPackageJson.scripts ?? {}).filter(([key]) => key.startsWith('script:'))
+  );
+
   return {
     name: prevPackageJson.name,
     version: prevPackageJson.version,
@@ -53,7 +57,8 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       'test:watch': 'vitest --watch',
       typecheck: 'tsc',
       'typecheck:watch': 'tsc --watch',
-      ...(config.viteExample ? { 'example:run': 'vite example' } : {}),
+      ...(config.viteExample ? { 'example:run': 'vite example' } : undefined),
+      ...(config.scripts ? prevScriptsScripts : undefined),
     },
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
@@ -86,6 +91,12 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
             react: '^18.2.0',
             'react-dom': '^18.2.0',
             '@vitejs/plugin-react': '^4.0.1',
+          }
+        : undefined),
+      ...(config.scripts
+        ? {
+            tsx: '^3.12.7',
+            esbuild: '^0.18.10',
           }
         : undefined),
     },

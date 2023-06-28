@@ -86,6 +86,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     'config.json',
     forceInstall ? null : 'node_modules',
     config.viteExample ? 'example' : null,
+    config.scripts ? 'scripts' : null,
   ].filter(Boolean);
 
   // remove all files except for the ones we want to keep
