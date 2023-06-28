@@ -1,4 +1,4 @@
-export type Org = 'etienne-dldc' | 'instant-api';
+export type Org = 'etienne-dldc' | 'instant-api' | 'dldc-packages';
 
 export interface IPackage {
   readonly repository: string;
@@ -30,10 +30,10 @@ export const packages = [
   { org: 'etienne-dldc', repository: 'democrat' },
   { org: 'etienne-dldc', repository: 'react-formi' },
   { org: 'etienne-dldc', repository: 'zen-serve' },
-  { org: 'etienne-dldc', repository: 'formi' },
+  { org: 'dldc-packages', repository: 'formi' },
   { org: 'etienne-dldc', repository: 'ts-fonts' },
   { org: 'etienne-dldc', repository: 'zendb' },
   { org: 'etienne-dldc', repository: 'zendb-better-sqlite3' },
   { org: 'etienne-dldc', repository: 'zendb-sqljs' },
-  { org: 'etienne-dldc', repository: 'umbrella-common' },
+  { org: 'dldc-packages', repository: 'umbrella-common' },
 ] as const satisfies Packages;
