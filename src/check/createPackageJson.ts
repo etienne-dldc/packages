@@ -25,13 +25,13 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
     version: prevPackageJson.version,
     description: prevPackageJson.description,
     keywords: prevPackageJson.keywords,
-    homepage: `https://github.com/${pkg.org}/${pkg.name}#readme`,
+    homepage: `https://github.com/${pkg.org}/${pkg.repository}#readme`,
     bugs: {
-      url: `https://github.com/${pkg.org}/${pkg.name}/issues`,
+      url: `https://github.com/${pkg.org}/${pkg.repository}/issues`,
     },
     repository: {
       type: 'git',
-      url: `git+https://github.com/${pkg.org}/${pkg.name}.git`,
+      url: `git+https://github.com/${pkg.org}/${pkg.repository}.git`,
     },
     license: 'MIT',
     author: 'Etienne Dldc <e.deladonchamps@gmail.com>',

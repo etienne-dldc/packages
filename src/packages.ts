@@ -1,39 +1,39 @@
 export type Org = 'etienne-dldc' | 'instant-api';
 
 export interface IPackage {
-  readonly name: string;
+  readonly repository: string;
   readonly org: Org;
   readonly deprecated?: boolean;
 }
 
 export type Packages = readonly IPackage[];
 
-export type PackageName = (typeof packages)[number]['name'];
+export type PackageName = (typeof packages)[number]['repository'];
 
 export const packages = [
-  { org: 'etienne-dldc', name: 'zensqlite' },
-  { org: 'etienne-dldc', name: 'stachine' },
-  { org: 'etienne-dldc', name: 'draaw' },
-  { org: 'etienne-dldc', name: 'docsy' },
-  { org: 'etienne-dldc', name: 'mappemonde' },
-  { org: 'etienne-dldc', name: 'miid' },
-  { org: 'etienne-dldc', name: 'literal-parser' },
-  { org: 'etienne-dldc', name: 'jsx-linear-parser' },
-  { org: 'etienne-dldc', name: 'interpolated-material-colors' },
-  { org: 'etienne-dldc', name: 'interpolated-colors' },
-  { org: 'etienne-dldc', name: 'humpf' },
-  { org: 'etienne-dldc', name: 'staack' },
-  { org: 'etienne-dldc', name: 'erreur' },
-  { org: 'etienne-dldc', name: 'suub' },
-  { org: 'etienne-dldc', name: 'zenjson' },
-  { org: 'etienne-dldc', name: 'chemin' },
-  { org: 'etienne-dldc', name: 'democrat' },
-  { org: 'etienne-dldc', name: 'react-formi' },
-  { org: 'etienne-dldc', name: 'zen-serve' },
-  { org: 'etienne-dldc', name: 'formi' },
-  { org: 'etienne-dldc', name: 'ts-fonts' },
-  { org: 'etienne-dldc', name: 'zendb' },
-  { org: 'etienne-dldc', name: 'zendb-better-sqlite3' },
-  { org: 'etienne-dldc', name: 'zendb-sqljs' },
-  { org: 'etienne-dldc', name: 'umbrella-common' },
+  { org: 'etienne-dldc', repository: 'zensqlite' },
+  { org: 'etienne-dldc', repository: 'stachine' },
+  { org: 'etienne-dldc', repository: 'draaw' },
+  { org: 'etienne-dldc', repository: 'docsy' },
+  { org: 'etienne-dldc', repository: 'mappemonde' },
+  { org: 'etienne-dldc', repository: 'miid' },
+  { org: 'etienne-dldc', repository: 'literal-parser' },
+  { org: 'etienne-dldc', repository: 'jsx-linear-parser' },
+  { org: 'etienne-dldc', repository: 'interpolated-material-colors' },
+  { org: 'etienne-dldc', repository: 'interpolated-colors' },
+  { org: 'etienne-dldc', repository: 'humpf' },
+  { org: 'etienne-dldc', repository: 'staack' },
+  { org: 'etienne-dldc', repository: 'erreur' },
+  { org: 'etienne-dldc', repository: 'suub' },
+  { org: 'etienne-dldc', repository: 'zenjson' },
+  { org: 'etienne-dldc', repository: 'chemin' },
+  { org: 'etienne-dldc', repository: 'democrat' },
+  { org: 'etienne-dldc', repository: 'react-formi' },
+  { org: 'etienne-dldc', repository: 'zen-serve' },
+  { org: 'etienne-dldc', repository: 'formi' },
+  { org: 'etienne-dldc', repository: 'ts-fonts' },
+  { org: 'etienne-dldc', repository: 'zendb' },
+  { org: 'etienne-dldc', repository: 'zendb-better-sqlite3' },
+  { org: 'etienne-dldc', repository: 'zendb-sqljs' },
+  { org: 'etienne-dldc', repository: 'umbrella-common' },
 ] as const satisfies Packages;

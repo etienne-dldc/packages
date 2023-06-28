@@ -43,7 +43,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
       logger.log(`Skipping ${pkgName}`);
       return { success: false, pkg };
     }
-    const gitLink = `git@github.com:${pkg.org}/${pkg.name}.git`;
+    const gitLink = `git@github.com:${pkg.org}/${pkg.repository}.git`;
     logger.log(`Cloning in ${pkgName}`);
     await $({ verbose: false })`git clone -- ${gitLink} ${folder}`;
     logger.log(`Cloned`);
