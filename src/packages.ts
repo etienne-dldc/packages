@@ -3,7 +3,6 @@ export type Org = 'etienne-dldc' | 'instant-api' | 'dldc-packages';
 export interface IPackage {
   readonly repository: string;
   readonly org: Org;
-  readonly deprecated?: boolean;
 }
 
 export type Packages = readonly IPackage[];

@@ -21,10 +21,6 @@ export type CheckResult = { success: boolean; pkg: IPackage };
 
 export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interactive: boolean): Promise<CheckResult> {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
-  if (pkg.deprecated) {
-    parentLogger.log(`Skipping ${pkgName} (deprecated)`);
-    return { success: true, pkg };
-  }
 
   const forceInstall = false;
   const checkCleanBefore = true;
