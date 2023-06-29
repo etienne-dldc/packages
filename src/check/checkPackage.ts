@@ -29,6 +29,11 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   const logger = parentLogger.withPrefix(prefix);
   logger.log(`${pc.gray(folder)}`);
 
+  if (pkg.disabled) {
+    logger.log(`${pc.red('◆')} Disabled`);
+    return { success: true, pkg };
+  }
+
   if (!existsSync(folder)) {
     const shouldClone =
       interactive &&

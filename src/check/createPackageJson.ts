@@ -21,7 +21,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
   );
 
   return {
-    name: prevPackageJson.name,
+    name: getPackageName(pkg),
     version: prevPackageJson.version,
     description: prevPackageJson.description,
     keywords: prevPackageJson.keywords,
@@ -119,4 +119,11 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       },
     },
   };
+}
+
+function getPackageName(pkg: IPackage): string {
+  if (pkg.org === 'dldc-packages') {
+    return `@dldc/${pkg.repository}`;
+  }
+  return `@${pkg.org}/${pkg.repository}`;
 }
