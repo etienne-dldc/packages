@@ -24,6 +24,11 @@ async function commitPackage(pkg: IPackage, message: string) {
   logger.log(pkgName);
   const subLogger = logger.withPrefix(prefix);
   subLogger.log(`${pc.gray(folder)}`);
+  if (pkg.disabled) {
+    logger.log(`${pc.red('◆')} Disabled`);
+    return;
+  }
+
   const $$ = $({ cwd: folder, verbose: false });
   const isClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
   if (await isClean()) {
