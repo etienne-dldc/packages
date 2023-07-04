@@ -14,6 +14,7 @@ const ConfigSchema = z.strictObject({
   // disable threads for vitest (used by draaw)
   // needed for canvas https://github.com/vitest-dev/vitest/issues/740
   vitestNoThreads: z.boolean().optional(),
+  skipLibCheck: z.boolean().optional(), // add skipLibCheck to tsconfig
 });
 
 export type IConfig = Required<z.infer<typeof ConfigSchema>>;
@@ -25,6 +26,7 @@ const DEFAULT_CONFIG: IConfig = {
   vitestSetupFile: false,
   vitestNoThreads: false,
   scripts: false,
+  skipLibCheck: false,
 };
 
 export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig | null> {

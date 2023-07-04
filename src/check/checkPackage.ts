@@ -23,7 +23,9 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
 
   const forceInstall = false;
-  const checkCleanBefore = true;
+  const rebuildLockfile = false;
+  const checkCleanBefore = false;
+  const checkCleanAfter = false;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);
@@ -82,7 +84,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     'src',
     'tests',
     'README.md',
-    'pnpm-lock.yaml',
+    rebuildLockfile ? null : 'pnpm-lock.yaml',
     'design',
     'config.json',
     forceInstall ? null : 'node_modules',
@@ -106,7 +108,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
   // create tsconfig.json
   const tsconfigFile = createTsconfig(config);
-  await saveFile(folder, 'tsconfig.json', JSON.stringify(tsconfigFile, null, 2));
+  await saveFile(folder, 'tsconfig.json', tsconfigFile);
   // Create .eslintrc.json
   const eslintConfig = createEslintConfig(config);
   await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
@@ -115,8 +117,24 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   await saveFile(folder, 'vitest.config.ts', vitestConfig);
   logger.log(`Installing deps`);
   await $$`pnpm i`;
-  logger.log(`Running lint:fix`);
-  await $$`pnpm run lint:fix`;
+
+  let lintFixSuccess = true;
+  try {
+    logger.log(`Running lint:fix`);
+    await $$`pnpm run lint:fix`;
+  } catch (error) {
+    lintFixSuccess = false;
+    logger.log(`${pc.red('◆')} lint:fix failed`);
+  }
+
+  let typecheckSuccess = true;
+  try {
+    logger.log(`Type checking`);
+    await $$`pnpm run typecheck`;
+  } catch (error) {
+    typecheckSuccess = false;
+    logger.log(`${pc.red('◆')} Type checking failed`);
+  }
 
   let buildSuccess = true;
   try {
@@ -136,7 +154,9 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     logger.log(`${pc.red('◆')} Tests failed`);
   }
 
-  if (!(await checkIsClean()) || !testSuccess || !buildSuccess) {
+  const isCleanAfter = await checkIsClean();
+
+  if ((checkCleanAfter && !isCleanAfter) || !testSuccess || !buildSuccess || !typecheckSuccess || !lintFixSuccess) {
     logger.log(`${pc.red('◆')} Not clean`);
     return { success: false, pkg };
   }

@@ -21,6 +21,7 @@ export function createEslintConfig(config: IConfig): any {
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/ban-types': 'off',
+      '@typescript-eslint/no-this-alias': 'off',
       'no-constant-condition': 'off',
     },
   };
