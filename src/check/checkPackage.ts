@@ -24,8 +24,8 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
 
   const forceInstall = false;
   const rebuildLockfile = false;
-  const checkCleanBefore = false;
-  const checkCleanAfter = false;
+  const checkCleanBefore = true;
+  const checkCleanAfter = true;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);

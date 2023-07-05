@@ -1,5 +1,6 @@
 import { confirm } from '@inquirer/prompts';
 import { $ } from 'execa';
+import pLimit from 'p-limit';
 import pc from 'picocolors';
 import yargs from 'yargs';
 import { CheckResult, checkPackage } from './check/checkPackage';
@@ -32,10 +33,14 @@ async function main() {
       results.push(res);
     }
   } else {
+    const limit = pLimit(5);
+
     const res = await Promise.all(
-      selectedPackages.map(async (pkg, index) => {
-        await new Promise((resolve) => setTimeout(resolve, index * 100));
-        return await handlePackage(pkg, true);
+      selectedPackages.map((pkg, index) => {
+        return limit(async () => {
+          await new Promise((resolve) => setTimeout(resolve, index * 100));
+          return await handlePackage(pkg, true);
+        });
       })
     );
     results.push(...res);
