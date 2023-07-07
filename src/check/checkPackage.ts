@@ -22,8 +22,8 @@ export type CheckResult = { success: boolean; pkg: IPackage };
 export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interactive: boolean): Promise<CheckResult> {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
 
-  const forceInstall = false;
-  const rebuildLockfile = false;
+  const forceInstall = true;
+  const rebuildLockfile = true;
   const checkCleanBefore = true;
   const checkCleanAfter = true;
 
