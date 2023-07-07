@@ -18,9 +18,9 @@ export const packages = [
   { org: 'dldc-packages', repository: 'pubsub' },
   { org: 'dldc-packages', repository: 'stachine' },
   { org: 'dldc-packages', repository: 'zenjson' },
-
   { org: 'dldc-packages', repository: 'rsync' },
   { org: 'dldc-packages', repository: 'sqlite' },
+
   { org: 'dldc-packages', repository: 'humpf' },
   { org: 'dldc-packages', repository: 'pareil' },
   { org: 'dldc-packages', repository: 'colors' },

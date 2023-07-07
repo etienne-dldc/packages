@@ -8,6 +8,6 @@ import { format, resolveConfig } from 'prettier';
 export async function saveFile(folder: string, path: string, content: string) {
   const filePath = resolve(folder, path);
   const config = await resolveConfig(filePath);
-  const formattedContent = format(content, { filepath: filePath, ...config });
+  const formattedContent = await format(content, { filepath: filePath, ...config });
   await writeFile(filePath, formattedContent);
 }
