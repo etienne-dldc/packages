@@ -20,9 +20,8 @@ export const packages = [
   { org: 'dldc-packages', repository: 'zenjson' },
   { org: 'dldc-packages', repository: 'rsync' },
   { org: 'dldc-packages', repository: 'sqlite' },
-
   { org: 'dldc-packages', repository: 'humpf' },
-  { org: 'dldc-packages', repository: 'pareil' },
+
   { org: 'dldc-packages', repository: 'colors' },
   { org: 'dldc-packages', repository: 'canvas' },
   { org: 'dldc-packages', repository: 'chemin' },
