@@ -17,6 +17,11 @@ async function resetPackage(pkg: IPackage) {
   const logger = Logger.create();
   logger.log(pkgName);
   const subLogger = logger.withPrefix(prefix);
+  if (pkg.disabled) {
+    logger.log(`${pc.red('◆')} Disabled`);
+    return;
+  }
+
   subLogger.log(`${pc.gray(folder)}`);
   const $$ = $({ cwd: folder, verbose: false });
   const isClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
