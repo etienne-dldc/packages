@@ -23,9 +23,9 @@ export const packages = [
   { org: 'dldc-packages', repository: 'humpf' },
   { org: 'dldc-packages', repository: 'colors' },
   { org: 'dldc-packages', repository: 'material-colors' },
-
   { org: 'dldc-packages', repository: 'canvas' },
   { org: 'dldc-packages', repository: 'chemin' },
+
   { org: 'dldc-packages', repository: 'democrat' },
   { org: 'dldc-packages', repository: 'docsy' },
   { org: 'dldc-packages', repository: 'fonts' },
