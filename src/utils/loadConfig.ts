@@ -38,8 +38,9 @@ export async function loadConfig(logger: ILogger, folder: string): Promise<IConf
   }
   try {
     const config = ConfigSchema.parse(await readJson(configPath));
+    const loadedConfig = { ...DEFAULT_CONFIG, ...config };
     logger.log(`Loaded config file`);
-    return { ...DEFAULT_CONFIG, ...config };
+    return loadedConfig;
   } catch (error) {
     logger.log(`${pc.red('◆')} Error loading config file`);
     logger.log((error as z.ZodError).message);
