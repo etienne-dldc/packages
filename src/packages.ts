@@ -29,14 +29,14 @@ export const packages = [
   { org: 'dldc-packages', repository: 'docsy' },
   { org: 'dldc-packages', repository: 'fonts' },
   { org: 'dldc-packages', repository: 'formi' },
-
   { org: 'dldc-packages', repository: 'formi-react' },
-  { org: 'dldc-packages', repository: 'jsx-linear-parser' },
   { org: 'dldc-packages', repository: 'literal-parser' },
+  { org: 'dldc-packages', repository: 'jsx-linear-parser' },
   { org: 'dldc-packages', repository: 'serve' },
+
+  { org: 'dldc-packages', repository: 'zendb' },
   { org: 'dldc-packages', repository: 'zendb-better-sqlite3' },
   { org: 'dldc-packages', repository: 'zendb-sqljs' },
-  { org: 'dldc-packages', repository: 'zendb' },
 
   { org: 'etienne-dldc', repository: 'umbrella-common' },
 
