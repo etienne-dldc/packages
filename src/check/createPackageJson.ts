@@ -67,6 +67,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       '@typescript-eslint/eslint-plugin': '^5.61.0',
       '@typescript-eslint/parser': '^5.61.0',
       '@vitest/coverage-v8': '^0.33.0',
+      'auto-changelog': '^2.4.0',
       eslint: '^8.44.0',
       'eslint-config-prettier': '^8.8.0',
       prettier: '^3.0.0',
@@ -112,10 +113,13 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       npm: {
         publish: true,
       },
+      git: {
+        changelog:
+          'pnpm exec auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
+      },
       github: {
         release: true,
         web: true,
-        autoGenerate: true,
       },
     },
   };
