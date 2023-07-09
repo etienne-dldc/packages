@@ -33,7 +33,6 @@ export const packages = [
   { org: 'dldc-packages', repository: 'literal-parser' },
   { org: 'dldc-packages', repository: 'jsx-linear-parser' },
   { org: 'dldc-packages', repository: 'serve' },
-
   { org: 'dldc-packages', repository: 'zendb' },
   { org: 'dldc-packages', repository: 'zendb-better-sqlite3' },
   { org: 'dldc-packages', repository: 'zendb-sqljs' },

@@ -63,19 +63,20 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
     devDependencies: {
-      '@types/node': '^20.4.0',
+      '@types/node': '^20.4.1',
       '@typescript-eslint/eslint-plugin': '^5.61.0',
       '@typescript-eslint/parser': '^5.61.0',
       '@vitest/coverage-v8': '^0.33.0',
       eslint: '^8.44.0',
       'eslint-config-prettier': '^8.8.0',
       prettier: '^3.0.0',
-      'release-it': '^16.0.0',
+      'release-it': '^16.1.0',
       rimraf: '^5.0.1',
       tsup: '^7.1.0',
       typescript: '^5.1.6',
-      ...(config.viteExample ? { vite: '^4.3.9' } : {}),
       vitest: '^0.33.0',
+      ...prevPackageJson.peerDependencies,
+      ...(config.viteExample ? { vite: '^4.3.9' } : {}),
       ...(config.additionalDevDependencies ?? {}),
       ...(config.react
         ? {
@@ -95,7 +96,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       ...(config.scripts
         ? {
             tsx: '^3.12.7',
-            esbuild: '^0.18.10',
+            esbuild: '^0.18.11',
           }
         : undefined),
     },
