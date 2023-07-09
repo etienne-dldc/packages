@@ -25,12 +25,12 @@ export const packages = [
   { org: 'dldc-packages', repository: 'material-colors' },
   { org: 'dldc-packages', repository: 'canvas' },
   { org: 'dldc-packages', repository: 'chemin' },
-
   { org: 'dldc-packages', repository: 'democrat' },
   { org: 'dldc-packages', repository: 'docsy' },
   { org: 'dldc-packages', repository: 'fonts' },
-  { org: 'dldc-packages', repository: 'formi-react' },
   { org: 'dldc-packages', repository: 'formi' },
+
+  { org: 'dldc-packages', repository: 'formi-react' },
   { org: 'dldc-packages', repository: 'jsx-linear-parser' },
   { org: 'dldc-packages', repository: 'literal-parser' },
   { org: 'dldc-packages', repository: 'serve' },

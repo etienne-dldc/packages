@@ -1,4 +1,5 @@
-import { readJson } from 'fs-extra';
+import { readFile } from 'fs-extra';
+import { parse as parseJSONC } from "jsonc-parser";
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import pc from 'picocolors';
@@ -37,7 +38,8 @@ export async function loadConfig(logger: ILogger, folder: string): Promise<IConf
     };
   }
   try {
-    const config = ConfigSchema.parse(await readJson(configPath));
+    const configStr = await readFile(configPath, 'utf-8');
+    const config = ConfigSchema.parse(parseJSONC(configStr));
     const loadedConfig = { ...DEFAULT_CONFIG, ...config };
     logger.log(`Loaded config file`);
     return loadedConfig;
