@@ -19,13 +19,22 @@ import { createVitestConfig } from './createVitestConfig';
 
 export type CheckResult = { success: boolean; pkg: IPackage };
 
+interface OudatedData {
+  current: string;
+  latest: string;
+  wanted: string;
+  isDeprecated: boolean;
+  dependencyType: string;
+}
+
 export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interactive: boolean): Promise<CheckResult> {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
 
   const forceInstall = false;
   const rebuildLockfile = false;
-  const checkCleanBefore = true;
+  const checkCleanBefore = false;
   const checkCleanAfter = true;
+  const checkOudated = false;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);
@@ -118,6 +127,32 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   logger.log(`Installing deps`);
   await $$`pnpm i`;
 
+  let oudatedSuccess = true;
+  if (checkOudated) {
+    logger.log(`Checking oudated`);
+    const oudatedStr = (await $$({ reject: false })`pnpm outdated --format json`).stdout;
+    const oudated = JSON.parse(oudatedStr) as Record<string, OudatedData>;
+    const oudatedEntries = Object.entries(oudated);
+    if (oudatedEntries.length > 0) {
+      oudatedSuccess = false;
+      const outdatedDev = oudatedEntries.filter(([, { dependencyType }]) => dependencyType === 'devDependencies');
+      const outdatedOther = oudatedEntries.filter(([, { dependencyType }]) => dependencyType !== 'devDependencies');
+      const outdatedLogger = logger.withPrefix('    ');
+      if (outdatedDev.length > 0) {
+        logger.log(`${pc.red('◆')} Oudated Dev`);
+        outdatedDev.forEach(([name, { current, latest }]) => {
+          outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
+        });
+      }
+      if (outdatedOther.length > 0) {
+        logger.log(`${pc.red('◆')} Oudated`);
+        outdatedOther.forEach(([name, { current, latest }]) => {
+          outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
+        });
+      }
+    }
+  }
+
   let lintFixSuccess = true;
   try {
     logger.log(`Running lint:fix`);
@@ -156,7 +191,14 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
 
   const isCleanAfter = await checkIsClean();
 
-  if ((checkCleanAfter && !isCleanAfter) || !testSuccess || !buildSuccess || !typecheckSuccess || !lintFixSuccess) {
+  if (
+    (checkCleanAfter && !isCleanAfter) ||
+    !testSuccess ||
+    !buildSuccess ||
+    !typecheckSuccess ||
+    !lintFixSuccess ||
+    !oudatedSuccess
+  ) {
     logger.log(`${pc.red('◆')} Not clean`);
     return { success: false, pkg };
   }

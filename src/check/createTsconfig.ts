@@ -4,7 +4,13 @@ import { IConfig } from '../utils/loadConfig';
 export function createTsconfig(config: IConfig): string {
   return json({
     $schema: 'https://json.schemastore.org/tsconfig',
-    include: ['src', 'tests', config.viteExample && 'example', config.scripts && 'scripts'].filter(Boolean),
+    include: [
+      'src',
+      'tests',
+      'vitest.config.ts',
+      ...(config.viteExample ? ['example', 'vite.config.ts'] : []),
+      config.scripts && 'scripts',
+    ].filter(Boolean),
     compilerOptions: {
       rootDir: '.',
 
