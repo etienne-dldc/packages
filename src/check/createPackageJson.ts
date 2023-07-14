@@ -55,6 +55,8 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       test: 'pnpm run lint && vitest run --coverage',
       'test:run': 'vitest run',
       'test:watch': 'vitest --watch',
+      changelog:
+        'auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
       typecheck: 'tsc',
       'typecheck:watch': 'tsc --watch',
       ...(config.viteExample ? { 'example:run': 'vite example' } : undefined),
@@ -114,8 +116,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
         publish: true,
       },
       git: {
-        changelog:
-          'pnpm exec auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
+        changelog: 'pnpm run changelog',
       },
       github: {
         release: true,

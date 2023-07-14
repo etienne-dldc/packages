@@ -35,6 +35,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   const checkCleanBefore = false;
   const checkCleanAfter = true;
   const checkOudated = false;
+  const checkPendingRelease = true;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);
@@ -153,6 +154,15 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     }
   }
 
+  let noPendingRelease = true;
+  if (checkPendingRelease) {
+    const result = await $$`pnpm run changelog`;
+    if (result.stdout.trim().length > 0) {
+      noPendingRelease = false;
+      logger.log(`${pc.red('◆')} Pending release`);
+    }
+  }
+
   let lintFixSuccess = true;
   try {
     logger.log(`Running lint:fix`);
@@ -197,7 +207,8 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     !buildSuccess ||
     !typecheckSuccess ||
     !lintFixSuccess ||
-    !oudatedSuccess
+    !oudatedSuccess ||
+    !noPendingRelease
   ) {
     logger.log(`${pc.red('◆')} Not clean`);
     return { success: false, pkg };
