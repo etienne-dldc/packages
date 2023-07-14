@@ -51,7 +51,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       build: 'rimraf dist && tsup --format cjs,esm src/mod.ts --dts src/mod.ts',
       lint: 'prettier . --check && eslint . && tsc --noEmit',
       'lint:fix': 'prettier . --write . && eslint . --fix',
-      release: 'release-it',
+      release: 'release-it --only-version',
       test: 'pnpm run lint && vitest run --coverage',
       'test:run': 'vitest run',
       'test:watch': 'vitest --watch',
