@@ -27,14 +27,18 @@ interface OudatedData {
   dependencyType: string;
 }
 
-export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interactive: boolean): Promise<CheckResult> {
+export async function checkPackage(
+  parentLogger: ILogger,
+  pkg: IPackage,
+  { deffered, fast }: { deffered: boolean; fast: boolean },
+): Promise<CheckResult> {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
 
   const forceInstall = false;
   const rebuildLockfile = false;
-  const checkCleanBefore = false;
+  const checkOudated = true;
+  const checkCleanBefore = true;
   const checkCleanAfter = true;
-  const checkOudated = false;
   const checkPendingRelease = true;
 
   parentLogger.log(pkgName);
@@ -48,7 +52,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
 
   if (!existsSync(folder)) {
     const shouldClone =
-      interactive &&
+      deffered &&
       (await confirm({
         message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
       }));
@@ -71,6 +75,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     logger.log(`${pc.red('◆')} Not on main branch`);
     return { success: false, pkg };
   }
+
   // make sure there are no uncommited changes
   const checkIsClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
   const isClean = await checkIsClean();
@@ -78,6 +83,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     logger.log(`${pc.red('◆')} Not clean`);
     return { success: false, pkg };
   }
+
   // pull latest
   if (isClean) {
     logger.log(`Pulling latest`);
@@ -103,28 +109,32 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
   ].filter(Boolean);
 
   // remove all files except for the ones we want to keep
-  const allFiles = await readdir(folder);
-  const filesToRemove = allFiles.filter((file) => !KEEP_FILES.includes(file));
-  const prevPackageJson = await readJson(resolve(folder, 'package.json'));
-  // remove files
-  for (const file of filesToRemove) {
-    await rm(resolve(folder, file), { recursive: true, force: true });
+  if (!fast) {
+    const allFiles = await readdir(folder);
+    const filesToRemove = allFiles.filter((file) => !KEEP_FILES.includes(file));
+    const prevPackageJson = await readJson(resolve(folder, 'package.json'));
+    // remove files
+    for (const file of filesToRemove) {
+      await rm(resolve(folder, file), { recursive: true, force: true });
+    }
+    // copy all files from template
+    const templateFolder = resolve('templates');
+    await copyAll(templateFolder, folder);
+    // create package.json
+    const newPackageJson = createPackageJson(prevPackageJson, pkg, config);
+    await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
+    // create tsconfig.json
+    const tsconfigFile = createTsconfig(config);
+    await saveFile(folder, 'tsconfig.json', tsconfigFile);
+    // Create .eslintrc.json
+    const eslintConfig = createEslintConfig(config);
+    await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
+    // Create vitest.config.ts
+    const vitestConfig = createVitestConfig(config);
+    await saveFile(folder, 'vitest.config.ts', vitestConfig);
   }
-  // copy all files from template
-  const templateFolder = resolve('templates');
-  await copyAll(templateFolder, folder);
-  // create package.json
-  const newPackageJson = createPackageJson(prevPackageJson, pkg, config);
-  await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
-  // create tsconfig.json
-  const tsconfigFile = createTsconfig(config);
-  await saveFile(folder, 'tsconfig.json', tsconfigFile);
-  // Create .eslintrc.json
-  const eslintConfig = createEslintConfig(config);
-  await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
-  // Create vitest.config.ts
-  const vitestConfig = createVitestConfig(config);
-  await saveFile(folder, 'vitest.config.ts', vitestConfig);
+
+  // Install deps
   logger.log(`Installing deps`);
   await $$`pnpm i`;
 
@@ -151,15 +161,6 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
           outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
         });
       }
-    }
-  }
-
-  let noPendingRelease = true;
-  if (checkPendingRelease) {
-    const result = await $$`pnpm run changelog`;
-    if (result.stdout.trim().length > 0) {
-      noPendingRelease = false;
-      logger.log(`${pc.red('◆')} Pending release`);
     }
   }
 
@@ -199,6 +200,15 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     logger.log(`${pc.red('◆')} Tests failed`);
   }
 
+  let noPendingRelease = true;
+  if (checkPendingRelease) {
+    const result = await $$`pnpm run --silent changelog`;
+    if (result.stdout.trim().length > 0) {
+      noPendingRelease = false;
+      logger.log(`${pc.red('◆')} Pending release`);
+    }
+  }
+
   const isCleanAfter = await checkIsClean();
 
   if (
@@ -210,7 +220,7 @@ export async function checkPackage(parentLogger: ILogger, pkg: IPackage, interac
     !oudatedSuccess ||
     !noPendingRelease
   ) {
-    logger.log(`${pc.red('◆')} Not clean`);
+    logger.log(`${pc.red('◆')} Action required`);
     return { success: false, pkg };
   }
   logger.log(`${pc.green('●')} All good`);

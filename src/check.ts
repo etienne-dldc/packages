@@ -12,6 +12,7 @@ import { selectPackages } from './utils/selectPackages';
 const paramsParser = yargs(process.argv.slice(2))
   .scriptName('check')
   .option('all', { type: 'boolean', default: false })
+  .option('fast', { type: 'boolean', default: false })
   .option('sequence', { type: 'boolean', default: false });
 
 main().catch(console.error);
@@ -25,11 +26,11 @@ async function main() {
 
   if (selectedPackages.length === 1) {
     const pkg = selectedPackages[0];
-    const res = await handlePackage(pkg, false);
+    const res = await handlePackage(pkg, { deffered: false, fast: params.fast });
     results.push(res);
   } else if (params.sequence) {
     for (const pkg of selectedPackages) {
-      const res = await handlePackage(pkg, false);
+      const res = await handlePackage(pkg, { deffered: false, fast: params.fast });
       results.push(res);
     }
   } else {
@@ -39,14 +40,15 @@ async function main() {
       selectedPackages.map((pkg, index) => {
         return limit(async () => {
           await new Promise((resolve) => setTimeout(resolve, index * 100));
-          return await handlePackage(pkg, true);
+          return await handlePackage(pkg, { deffered: true, fast: params.fast });
         });
-      })
+      }),
     );
     results.push(...res);
   }
-  if (results.some((res) => !res.success)) {
-    console.log(`${pc.red('◆')} Some packages failed`);
+  const failedCount = results.filter((res) => !res.success).length;
+  if (failedCount > 0) {
+    console.log(`${pc.red('◆')} ${failedCount} / ${results.length} packages failed`);
     const shouldOpen = await confirm({
       message: `Open failed packages in VSCode?`,
     });
@@ -62,16 +64,16 @@ async function main() {
   console.log(`${pc.green('◆')} Done`);
 }
 
-async function handlePackage(pkg: IPackage, deffered: boolean): Promise<CheckResult> {
-  const logger = Logger.create({ deffered });
+async function handlePackage(pkg: IPackage, options: { deffered: boolean; fast: boolean }): Promise<CheckResult> {
+  const logger = Logger.create({ deffered: options.deffered });
   try {
-    const result = await checkPackage(logger, pkg, !deffered);
-    if (deffered) {
+    const result = await checkPackage(logger, pkg, options);
+    if (options.deffered) {
       logger.commit();
     }
     return result;
   } catch (error) {
-    if (deffered) {
+    if (options.deffered) {
       logger.commit();
     }
     console.error(error);

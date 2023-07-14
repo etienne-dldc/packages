@@ -56,7 +56,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       'test:run': 'vitest run',
       'test:watch': 'vitest --watch',
       changelog:
-        'auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
+        'auto-changelog --stdout --hide-credit true --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
       typecheck: 'tsc',
       'typecheck:watch': 'tsc --watch',
       ...(config.viteExample ? { 'example:run': 'vite example' } : undefined),
@@ -78,7 +78,6 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       tsup: '^7.1.0',
       typescript: '^5.1.6',
       vitest: '^0.33.0',
-      ...prevPackageJson.peerDependencies,
       ...(config.viteExample ? { vite: '^4.4.4' } : {}),
       ...(config.additionalDevDependencies ?? {}),
       ...(config.react
@@ -116,7 +115,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
         publish: true,
       },
       git: {
-        changelog: 'pnpm run changelog',
+        changelog: 'pnpm run --silent changelog',
       },
       github: {
         release: true,
