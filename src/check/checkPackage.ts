@@ -36,7 +36,7 @@ export async function checkPackage(
 
   const forceInstall = false;
   const rebuildLockfile = false;
-  const checkOudated = true;
+  const checkOudated = false;
   const checkCleanBefore = true;
   const checkCleanAfter = true;
   const checkPendingRelease = true;

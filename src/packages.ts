@@ -37,7 +37,7 @@ export const packages = [
   { org: 'dldc-packages', repository: 'zendb-better-sqlite3' },
   { org: 'dldc-packages', repository: 'zendb-sqljs' },
 
-  { org: 'etienne-dldc', repository: 'umbrella-common', disabled: true },
+  { org: 'etienne-dldc', repository: 'umbrella-common' },
 
   { org: 'dldc-packages', repository: 'icons-bundler', disabled: true },
   { org: 'dldc-packages', repository: 'local-sql', disabled: true },
