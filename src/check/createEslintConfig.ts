@@ -22,6 +22,7 @@ export function createEslintConfig(config: IConfig): any {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
       '@typescript-eslint/no-this-alias': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',

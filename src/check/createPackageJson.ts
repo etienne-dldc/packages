@@ -49,6 +49,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
     files: ['dist'],
     scripts: {
       build: 'rimraf dist && tsup --format cjs,esm src/mod.ts --dts src/mod.ts',
+      'build:watch': 'tsup --watch --format cjs,esm src/mod.ts --dts src/mod.ts',
       lint: 'prettier . --check && eslint . && tsc --noEmit',
       'lint:fix': 'prettier . --write . && eslint . --fix',
       release: 'release-it --only-version',
@@ -73,7 +74,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       eslint: '^8.45.0',
       'eslint-config-prettier': '^8.8.0',
       prettier: '^3.0.0',
-      'release-it': '^16.1.0',
+      'release-it': '^16.1.2',
       rimraf: '^5.0.1',
       tsup: '^7.1.0',
       typescript: '^5.1.6',
@@ -98,7 +99,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       ...(config.scripts
         ? {
             tsx: '^3.12.7',
-            esbuild: '^0.18.11',
+            esbuild: '^0.18.13',
           }
         : undefined),
     },

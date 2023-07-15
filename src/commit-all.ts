@@ -25,7 +25,7 @@ async function commitPackage(pkg: IPackage, message: string) {
   const subLogger = logger.withPrefix(prefix);
   subLogger.log(`${pc.gray(folder)}`);
   if (pkg.disabled) {
-    logger.log(`${pc.red('◆')} Disabled`);
+    subLogger.log(`${pc.red('◆')} Disabled`);
     return;
   }
 
@@ -35,9 +35,10 @@ async function commitPackage(pkg: IPackage, message: string) {
     subLogger.log(`${pc.green('●')} No changes`);
     return;
   }
-  subLogger.log(`Committing ${pkgName}`);
+  subLogger.log(`Commit`);
   await $$`git add --all`;
   await $$`git commit -m ${message}`;
+  subLogger.log(`Push`);
   await $$`git push`;
-  subLogger.log(`${pc.blue('●')} Committed and pushed`);
+  subLogger.log(`${pc.green('●')} Done`);
 }

@@ -200,27 +200,22 @@ export async function checkPackage(
     logger.log(`${pc.red('◆')} Tests failed`);
   }
 
-  let noPendingRelease = true;
   if (checkPendingRelease) {
     const result = await $$`pnpm run --silent changelog`;
     if (result.stdout.trim().length > 0) {
-      noPendingRelease = false;
-      logger.log(`${pc.red('◆')} Pending release`);
+      logger.log(`${pc.yellow('◆')} Pending release`);
     }
   }
 
-  const isCleanAfter = await checkIsClean();
+  let isCleanAfter = true;
+  if (checkCleanAfter) {
+    if (!(await checkIsClean())) {
+      isCleanAfter = false;
+      logger.log(`${pc.red('◆')} Not clean`);
+    }
+  }
 
-  if (
-    (checkCleanAfter && !isCleanAfter) ||
-    !testSuccess ||
-    !buildSuccess ||
-    !typecheckSuccess ||
-    !lintFixSuccess ||
-    !oudatedSuccess ||
-    !noPendingRelease
-  ) {
-    logger.log(`${pc.red('◆')} Action required`);
+  if (!isCleanAfter || !testSuccess || !buildSuccess || !typecheckSuccess || !lintFixSuccess || !oudatedSuccess) {
     return { success: false, pkg };
   }
   logger.log(`${pc.green('●')} All good`);
