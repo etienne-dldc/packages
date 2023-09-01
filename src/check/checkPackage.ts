@@ -34,12 +34,12 @@ export async function checkPackage(
 ): Promise<CheckResult> {
   const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
 
-  const forceInstall = false;
-  const rebuildLockfile = false;
+  const forceInstall = true;
+  const rebuildLockfile = true;
   const checkOudated = false;
   const checkCleanBefore = true;
   const checkCleanAfter = true;
-  const checkPendingRelease = true;
+  const checkPendingRelease = false;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);
