@@ -2,7 +2,7 @@ import { confirm } from '@inquirer/prompts';
 import { $ } from 'execa';
 import { existsSync } from 'fs';
 import { readJson } from 'fs-extra';
-import { readdir, rm } from 'fs/promises';
+import { readFile, readdir, rm, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
@@ -106,6 +106,7 @@ export async function checkPackage(
     forceInstall ? null : 'node_modules',
     config.viteExample ? 'example' : null,
     config.scripts ? 'scripts' : null,
+    ...config.keep,
   ].filter(Boolean);
 
   // remove all files except for the ones we want to keep
@@ -132,6 +133,14 @@ export async function checkPackage(
     // Create vitest.config.ts
     const vitestConfig = createVitestConfig(config);
     await saveFile(folder, 'vitest.config.ts', vitestConfig);
+    // add custom gitignore entries
+    if (config.gitignore.length > 0) {
+      const gitignorePath = resolve(folder, '.gitignore');
+      const gitignoreStr = await readFile(gitignorePath, 'utf-8');
+      const gitignoreLines = gitignoreStr.split('\n');
+      const newGitignoreLines = [...gitignoreLines, ...config.gitignore];
+      await writeFile(gitignorePath, newGitignoreLines.join('\n'));
+    }
   }
 
   // Install deps

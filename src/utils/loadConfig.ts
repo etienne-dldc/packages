@@ -1,5 +1,5 @@
 import { readFile } from 'fs-extra';
-import { parse as parseJSONC } from "jsonc-parser";
+import { parse as parseJSONC } from 'jsonc-parser';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import pc from 'picocolors';
@@ -16,6 +16,8 @@ const ConfigSchema = z.strictObject({
   // needed for canvas https://github.com/vitest-dev/vitest/issues/740
   vitestNoThreads: z.boolean().optional(),
   skipLibCheck: z.boolean().optional(), // add skipLibCheck to tsconfig
+  gitignore: z.array(z.string()).optional(), // add to .gitignore
+  keep: z.array(z.string()).optional(), // files / folders to keep
 });
 
 export type IConfig = Required<z.infer<typeof ConfigSchema>>;
@@ -28,6 +30,8 @@ const DEFAULT_CONFIG: IConfig = {
   vitestNoThreads: false,
   scripts: false,
   skipLibCheck: false,
+  gitignore: [],
+  keep: [],
 };
 
 export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig | null> {
