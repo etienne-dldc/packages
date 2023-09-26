@@ -32,6 +32,9 @@ async function main() {
     for (const pkg of selectedPackages) {
       const res = await handlePackage(pkg, { deffered: false, fast: params.fast });
       results.push(res);
+      if (!res.success) {
+        break;
+      }
     }
   } else {
     const limit = pLimit(5);

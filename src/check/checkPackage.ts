@@ -36,10 +36,10 @@ export async function checkPackage(
 
   const forceInstall = true;
   const rebuildLockfile = true;
-  const checkOudated = false;
+  const checkOudated = true;
   const checkCleanBefore = true;
   const checkCleanAfter = true;
-  const checkPendingRelease = false;
+  const checkPendingRelease = true;
 
   parentLogger.log(pkgName);
   const logger = parentLogger.withPrefix(prefix);
@@ -209,9 +209,11 @@ export async function checkPackage(
     logger.log(`${pc.red('◆')} Tests failed`);
   }
 
+  let noPendingRelease = true;
   if (checkPendingRelease) {
     const result = await $$`pnpm run --silent changelog`;
     if (result.stdout.trim().length > 0) {
+      noPendingRelease = false;
       logger.log(`${pc.yellow('◆')} Pending release`);
     }
   }
@@ -224,7 +226,15 @@ export async function checkPackage(
     }
   }
 
-  if (!isCleanAfter || !testSuccess || !buildSuccess || !typecheckSuccess || !lintFixSuccess || !oudatedSuccess) {
+  if (
+    !isCleanAfter ||
+    !testSuccess ||
+    !buildSuccess ||
+    !typecheckSuccess ||
+    !lintFixSuccess ||
+    !oudatedSuccess ||
+    !noPendingRelease
+  ) {
     return { success: false, pkg };
   }
   logger.log(`${pc.green('●')} All good`);
