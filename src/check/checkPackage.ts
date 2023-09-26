@@ -119,7 +119,7 @@ export async function checkPackage(
       await rm(resolve(folder, file), { recursive: true, force: true });
     }
     // copy all files from template
-    const templateFolder = resolve('templates');
+    const templateFolder = resolve('template');
     await copyAll(templateFolder, folder);
     // create package.json
     const newPackageJson = createPackageJson(prevPackageJson, pkg, config);
