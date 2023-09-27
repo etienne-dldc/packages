@@ -3,11 +3,11 @@ import { $ } from 'execa';
 import pLimit from 'p-limit';
 import pc from 'picocolors';
 import yargs from 'yargs';
-import { CheckResult, checkPackage } from './check/checkPackage';
+import { CheckResult, checkPackage } from './legacy/checkPackage';
+import { pkgUtilsBase } from './logic/pkgUtils';
+import { selectPackages } from './logic/selectPackages';
 import { IPackage } from './packages';
 import { Logger } from './utils/logger';
-import { pkgUtils } from './utils/pkgUtils';
-import { selectPackages } from './utils/selectPackages';
 
 const paramsParser = yargs(process.argv.slice(2))
   .scriptName('check')
@@ -58,7 +58,7 @@ async function main() {
     if (shouldOpen) {
       for (const res of results) {
         if (!res.success) {
-          const { folder } = pkgUtils(res.pkg);
+          const { folder } = pkgUtilsBase(res.pkg);
           await $`code ${folder}`;
         }
       }

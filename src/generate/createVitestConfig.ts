@@ -1,7 +1,7 @@
+import { IDldcConfig } from '../logic/loadDldcConfig';
 import { json } from '../utils/json';
-import { IConfig } from '../utils/loadConfig';
 
-export function createVitestConfig(config: IConfig) {
+export function createVitestConfig(config: IDldcConfig) {
   return [
     `import { defineConfig } from 'vitest/config';`,
     config.react ? `import react from '@vitejs/plugin-react';` : null,

@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 import sortPackageJson from 'sort-package-json';
-import { saveFile } from './saveFile';
+import { saveFile } from '../utils/saveFile';
 
 export async function updatePackageJson(folder: string, update: (pkg: any) => any | false) {
   const packageJsonPath = resolve(folder, 'package.json');

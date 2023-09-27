@@ -1,8 +1,9 @@
 import type { PackageJson } from 'types-package-json';
+import { IDldcConfig } from '../logic/loadDldcConfig';
 import { IPackage } from '../packages';
-import { IConfig } from '../utils/loadConfig';
+import { createEslintConfig } from './createEslintConfig';
 
-interface PackageJsonFixed extends PackageJson {
+export interface PackageJsonFixed extends PackageJson {
   sideEffects: boolean;
   exports: Record<string, Record<string, string>>;
   module: string;
@@ -13,9 +14,12 @@ interface PackageJsonFixed extends PackageJson {
     registry: string;
   };
   'release-it': any;
+  eslintConfig: any;
+  prettier: any;
+  dldc?: IDldcConfig;
 }
 
-export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, config: IConfig): PackageJsonFixed {
+export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, config: IDldcConfig): PackageJsonFixed {
   const prevScriptsScripts = Object.fromEntries(
     Object.entries(prevPackageJson.scripts ?? {}).filter(([key]) => key.startsWith('script:')),
   );
@@ -107,6 +111,13 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
     publishConfig: {
       access: 'public',
       registry: 'https://registry.npmjs.org',
+    },
+    eslintConfig: createEslintConfig(config),
+    prettier: {
+      tabWidth: 2,
+      useTabs: false,
+      printWidth: 120,
+      singleQuote: true,
     },
     'release-it': {
       hooks: {

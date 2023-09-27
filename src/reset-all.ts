@@ -1,8 +1,8 @@
 import { $ } from 'execa';
 import pc from 'picocolors';
+import { pkgUtilsBase } from './logic/pkgUtils';
 import { IPackage, packages } from './packages';
 import { Logger } from './utils/logger';
-import { pkgUtils } from './utils/pkgUtils';
 
 main().catch(console.error);
 
@@ -13,10 +13,10 @@ async function main() {
 }
 
 async function resetPackage(pkg: IPackage) {
-  const { prefix, pkgName, folder } = pkgUtils(pkg);
+  const { prefix, pkgName, folder } = pkgUtilsBase(pkg);
   const logger = Logger.create();
   logger.log(pkgName);
-  const subLogger = logger.withPrefix(prefix);
+  const subLogger = logger.child(prefix);
   if (pkg.disabled) {
     logger.log(`${pc.red('◆')} Disabled`);
     return;

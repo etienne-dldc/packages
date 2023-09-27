@@ -1,6 +1,6 @@
-import { IConfig } from '../utils/loadConfig';
+import { IDldcConfig } from '../logic/loadDldcConfig';
 
-export function createEslintConfig(config: IConfig): any {
+export function createEslintConfig(config: IDldcConfig): any {
   return {
     parser: '@typescript-eslint/parser',
     parserOptions: {

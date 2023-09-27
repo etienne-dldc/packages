@@ -14,11 +14,12 @@
   "scripts": {
     "check": "tsx ./src/check.ts",
     "check:all": "tsx ./src/check.ts --all",
-    "check:fast": "tsx ./src/check.ts --fast",
-    "check:all-sequence": "tsx ./src/check.ts --all --sequence",
     "check:all-fast": "tsx ./src/check.ts --all --fast",
     "check:all-fast-sequence": "tsx ./src/check.ts --all --fast --sequence",
+    "check:all-sequence": "tsx ./src/check.ts --all --sequence",
+    "check:fast": "tsx ./src/check.ts --fast",
     "commit-all": "tsx ./src/commit-all.ts",
+    "interactive": "tsx ./src/interactive.ts",
     "reset-all": "tsx ./src/reset-all.ts",
     "typecheck": "tsc",
     "typecheck:watch": "tsc --watch"

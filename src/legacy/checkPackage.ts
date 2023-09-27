@@ -6,16 +6,15 @@ import { readFile, readdir, rm, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
+import { createPackageJson } from '../generate/createPackageJson';
+import { createTsconfig } from '../generate/createTsconfig';
+import { createVitestConfig } from '../generate/createVitestConfig';
+import { loadConfig } from '../logic/loadDldcConfig';
+import { pkgUtilsBase } from '../logic/pkgUtils';
 import { IPackage } from '../packages';
 import { copyAll } from '../utils/copyAll';
-import { loadConfig } from '../utils/loadConfig';
 import { ILogger } from '../utils/logger';
-import { pkgUtils } from '../utils/pkgUtils';
 import { saveFile } from '../utils/saveFile';
-import { createEslintConfig } from './createEslintConfig';
-import { createPackageJson } from './createPackageJson';
-import { createTsconfig } from './createTsconfig';
-import { createVitestConfig } from './createVitestConfig';
 
 export type CheckResult = { success: boolean; pkg: IPackage };
 
@@ -32,7 +31,7 @@ export async function checkPackage(
   pkg: IPackage,
   { deffered, fast }: { deffered: boolean; fast: boolean },
 ): Promise<CheckResult> {
-  const { prefix, folder, relativeFolder, pkgName } = pkgUtils(pkg);
+  const { prefix, folder, relativeFolder, pkgName } = pkgUtilsBase(pkg);
 
   const forceInstall = true;
   const rebuildLockfile = true;
@@ -42,7 +41,7 @@ export async function checkPackage(
   const checkPendingRelease = true;
 
   parentLogger.log(pkgName);
-  const logger = parentLogger.withPrefix(prefix);
+  const logger = parentLogger.child(prefix);
   logger.log(`${pc.gray(folder)}`);
 
   if (pkg.disabled) {
@@ -127,9 +126,6 @@ export async function checkPackage(
     // create tsconfig.json
     const tsconfigFile = createTsconfig(config);
     await saveFile(folder, 'tsconfig.json', tsconfigFile);
-    // Create .eslintrc.json
-    const eslintConfig = createEslintConfig(config);
-    await saveFile(folder, '.eslintrc.json', JSON.stringify(eslintConfig, null, 2));
     // Create vitest.config.ts
     const vitestConfig = createVitestConfig(config);
     await saveFile(folder, 'vitest.config.ts', vitestConfig);
@@ -157,7 +153,7 @@ export async function checkPackage(
       oudatedSuccess = false;
       const outdatedDev = oudatedEntries.filter(([, { dependencyType }]) => dependencyType === 'devDependencies');
       const outdatedOther = oudatedEntries.filter(([, { dependencyType }]) => dependencyType !== 'devDependencies');
-      const outdatedLogger = logger.withPrefix('    ');
+      const outdatedLogger = logger.child('    ');
       if (outdatedDev.length > 0) {
         logger.log(`${pc.red('◆')} Oudated Dev`);
         outdatedDev.forEach(([name, { current, latest }]) => {

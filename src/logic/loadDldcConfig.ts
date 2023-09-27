@@ -4,9 +4,9 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import pc from 'picocolors';
 import { z } from 'zod';
-import { ILogger } from './logger';
+import { ILogger } from '../utils/logger';
 
-const ConfigSchema = z.strictObject({
+const DldcConfigSchema = z.strictObject({
   additionalDevDependencies: z.record(z.string()).optional(),
   react: z.boolean().optional(), // add eslint-plugin-react-hooks, enable jsx in tsconfig
   viteExample: z.boolean().optional(), // example folder with vite
@@ -20,9 +20,9 @@ const ConfigSchema = z.strictObject({
   keep: z.array(z.string()).optional(), // files / folders to keep
 });
 
-export type IConfig = Required<z.infer<typeof ConfigSchema>>;
+export type IDldcConfig = Required<z.infer<typeof DldcConfigSchema>>;
 
-const DEFAULT_CONFIG: IConfig = {
+const DEFAULT_CONFIG: IDldcConfig = {
   additionalDevDependencies: {},
   react: false,
   viteExample: false,
@@ -34,7 +34,8 @@ const DEFAULT_CONFIG: IConfig = {
   keep: [],
 };
 
-export async function loadConfig(logger: ILogger, folder: string): Promise<IConfig | null> {
+export async function loadConfig(logger: ILogger, folder: string): Promise<IDldcConfig | null> {
+  // TODO: Read package.json instead, move this to resolve
   const configPath = resolve(folder, 'config.json');
   if (!existsSync(configPath)) {
     return {
@@ -43,7 +44,7 @@ export async function loadConfig(logger: ILogger, folder: string): Promise<IConf
   }
   try {
     const configStr = await readFile(configPath, 'utf-8');
-    const config = ConfigSchema.parse(parseJSONC(configStr));
+    const config = DldcConfigSchema.parse(parseJSONC(configStr));
     const loadedConfig = { ...DEFAULT_CONFIG, ...config };
     logger.log(`Loaded config file`);
     return loadedConfig;

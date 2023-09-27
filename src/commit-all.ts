@@ -2,9 +2,9 @@ import { isCancel } from '@clack/core';
 import { input } from '@inquirer/prompts';
 import { $ } from 'execa';
 import pc from 'picocolors';
+import { pkgUtilsBase } from './logic/pkgUtils';
 import { IPackage, packages } from './packages';
 import { Logger } from './utils/logger';
-import { pkgUtils } from './utils/pkgUtils';
 
 main().catch(console.error);
 
@@ -19,10 +19,10 @@ async function main() {
 }
 
 async function commitPackage(pkg: IPackage, message: string) {
-  const { prefix, pkgName, folder } = pkgUtils(pkg);
+  const { prefix, pkgName, folder } = pkgUtilsBase(pkg);
   const logger = Logger.create();
   logger.log(pkgName);
-  const subLogger = logger.withPrefix(prefix);
+  const subLogger = logger.child(prefix);
   subLogger.log(`${pc.gray(folder)}`);
   if (pkg.disabled) {
     subLogger.log(`${pc.red('◆')} Disabled`);

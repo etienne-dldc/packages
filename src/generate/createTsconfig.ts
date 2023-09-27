@@ -1,7 +1,7 @@
+import { IDldcConfig } from '../logic/loadDldcConfig';
 import { json } from '../utils/json';
-import { IConfig } from '../utils/loadConfig';
 
-export function createTsconfig(config: IConfig): string {
+export function createTsconfig(config: IDldcConfig): string {
   return json({
     $schema: 'https://json.schemastore.org/tsconfig',
     include: [
