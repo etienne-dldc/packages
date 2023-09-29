@@ -1,13 +1,13 @@
 import { writeFile } from 'fs/promises';
 import { resolve } from 'path';
-import { format, resolveConfig } from 'prettier';
+import { format } from 'prettier';
+import { prettierConfig } from '../logic/prettierConfig';
 
 /**
  * Save fiel and format with prettier
  */
 export async function saveFile(folder: string, path: string, content: string) {
   const filePath = resolve(folder, path);
-  const config = await resolveConfig(filePath);
-  const formattedContent = await format(content, { filepath: filePath, ...config });
+  const formattedContent = await format(content, { filepath: filePath, ...prettierConfig });
   await writeFile(filePath, formattedContent);
 }

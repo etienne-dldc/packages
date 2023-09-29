@@ -1,27 +1,20 @@
-import type { PackageJson } from 'types-package-json';
-import { IDldcConfig } from '../logic/loadDldcConfig';
-import { IPackage } from '../packages';
+import { PkgStack } from '../logic/PkgStack';
+import { IPackageJsonFixed } from '../logic/packageJson';
+import { prettierConfig } from '../logic/prettierConfig';
+import { DldcConfigKey } from '../tasks/readDldcConfig';
+import { PackageJsonKey } from '../tasks/readPackageJson';
 import { createEslintConfig } from './createEslintConfig';
 
-export interface PackageJsonFixed extends PackageJson {
-  sideEffects: boolean;
-  exports: Record<string, Record<string, string>>;
-  module: string;
-  types: string;
-  packageManager: string;
-  publishConfig: {
-    access: string;
-    registry: string;
-  };
-  'release-it': any;
-  eslintConfig: any;
-  prettier: any;
-  dldc?: IDldcConfig;
-}
-
-export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, config: IDldcConfig): PackageJsonFixed {
+export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
+  const prevPackageJson = pkg.getOrFail(PackageJsonKey.Consumer);
+  const dldcConfig = pkg.getOrFail(DldcConfigKey.Consumer);
   const prevScriptsScripts = Object.fromEntries(
     Object.entries(prevPackageJson.scripts ?? {}).filter(([key]) => key.startsWith('script:')),
+  );
+  const additionalDevDependencies = Object.fromEntries(
+    Object.entries(prevPackageJson.devDependencies ?? {}).filter(([key]) =>
+      dldcConfig.additionalDevDependencies.includes(key),
+    ),
   );
 
   return {
@@ -29,13 +22,13 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
     version: prevPackageJson.version,
     description: prevPackageJson.description,
     keywords: prevPackageJson.keywords,
-    homepage: `https://github.com/${pkg.org}/${pkg.repository}#readme`,
+    homepage: `https://github.com/${pkg.base.org}/${pkg.base.repository}#readme`,
     bugs: {
-      url: `https://github.com/${pkg.org}/${pkg.repository}/issues`,
+      url: `https://github.com/${pkg.base.org}/${pkg.base.repository}/issues`,
     },
     repository: {
       type: 'git',
-      url: `git+https://github.com/${pkg.org}/${pkg.repository}.git`,
+      url: `git+https://github.com/${pkg.base.org}/${pkg.base.repository}.git`,
     },
     license: 'MIT',
     author: 'Etienne Dldc <e.deladonchamps@gmail.com>',
@@ -64,8 +57,8 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
         'auto-changelog --stdout --hide-credit true --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
       typecheck: 'tsc',
       'typecheck:watch': 'tsc --watch',
-      ...(config.viteExample ? { 'example:run': 'vite example' } : undefined),
-      ...(config.scripts ? prevScriptsScripts : undefined),
+      ...(dldcConfig.viteExample ? { 'example:run': 'vite example' } : undefined),
+      ...(dldcConfig.scripts ? prevScriptsScripts : undefined),
     },
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
@@ -83,10 +76,10 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       tsup: '^7.2.0',
       typescript: '^5.2.2',
       vitest: '^0.34.5',
-      ...(config.viteExample ? { vite: '^4.4.9' } : {}),
+      ...(dldcConfig.viteExample ? { vite: '^4.4.9' } : {}),
       ...(prevPackageJson.peerDependencies ?? {}),
-      ...(config.additionalDevDependencies ?? {}),
-      ...(config.react
+      ...additionalDevDependencies,
+      ...(dldcConfig.react
         ? {
             '@testing-library/jest-dom': '^6.1.3',
             '@testing-library/react': '^14.0.0',
@@ -100,7 +93,7 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
             react: '^18.2.0',
           }
         : undefined),
-      ...(config.scripts
+      ...(dldcConfig.scripts
         ? {
             tsx: '^3.12.10',
             esbuild: '^0.19.3',
@@ -112,13 +105,9 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
       access: 'public',
       registry: 'https://registry.npmjs.org',
     },
-    eslintConfig: createEslintConfig(config),
-    prettier: {
-      tabWidth: 2,
-      useTabs: false,
-      printWidth: 120,
-      singleQuote: true,
-    },
+    eslintConfig: createEslintConfig(dldcConfig),
+    dldc: prevPackageJson.dldc,
+    prettier: prettierConfig,
     'release-it': {
       hooks: {
         'before:init': ['pnpm run build', 'pnpm test'],
@@ -137,9 +126,9 @@ export function createPackageJson(prevPackageJson: PackageJson, pkg: IPackage, c
   };
 }
 
-function getPackageName(pkg: IPackage): string {
-  if (pkg.org === 'dldc-packages') {
-    return `@dldc/${pkg.repository}`;
+function getPackageName(pkg: PkgStack): string {
+  if (pkg.base.org === 'dldc-packages') {
+    return `@dldc/${pkg.base.repository}`;
   }
-  return `@${pkg.org}/${pkg.repository}`;
+  return `@${pkg.base.org}/${pkg.base.repository}`;
 }

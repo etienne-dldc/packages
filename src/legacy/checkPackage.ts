@@ -1,20 +1,6 @@
-import { confirm } from '@inquirer/prompts';
-import { $ } from 'execa';
-import { existsSync } from 'fs';
-import { readJson } from 'fs-extra';
-import { readFile, readdir, rm, writeFile } from 'fs/promises';
-import { resolve } from 'path';
 import pc from 'picocolors';
-import sortPackageJson from 'sort-package-json';
-import { createPackageJson } from '../generate/createPackageJson';
-import { createTsconfig } from '../generate/createTsconfig';
-import { createVitestConfig } from '../generate/createVitestConfig';
-import { loadConfig } from '../logic/loadDldcConfig';
-import { pkgUtilsBase } from '../logic/pkgUtils';
 import { IPackage } from '../packages';
-import { copyAll } from '../utils/copyAll';
 import { ILogger } from '../utils/logger';
-import { saveFile } from '../utils/saveFile';
 
 export type CheckResult = { success: boolean; pkg: IPackage };
 
@@ -31,117 +17,117 @@ export async function checkPackage(
   pkg: IPackage,
   { deffered, fast }: { deffered: boolean; fast: boolean },
 ): Promise<CheckResult> {
-  const { prefix, folder, relativeFolder, pkgName } = pkgUtilsBase(pkg);
+  // const { prefix, folder, relativeFolder, pkgName } = pkgUtilsBase(pkg);
 
-  const forceInstall = true;
-  const rebuildLockfile = true;
-  const checkOudated = true;
-  const checkCleanBefore = true;
-  const checkCleanAfter = true;
-  const checkPendingRelease = true;
+  // const forceInstall = true;
+  // const rebuildLockfile = true;
+  // const checkOudated = true;
+  // const checkCleanBefore = true;
+  // const checkCleanAfter = true;
+  // const checkPendingRelease = true;
 
-  parentLogger.log(pkgName);
-  const logger = parentLogger.child(prefix);
-  logger.log(`${pc.gray(folder)}`);
+  // parentLogger.log(pkgName);
+  // const logger = parentLogger.child(prefix);
+  // logger.log(`${pc.gray(folder)}`);
 
-  if (pkg.disabled) {
-    logger.log(`${pc.red('◆')} Disabled`);
-    return { success: true, pkg };
-  }
+  // if (pkg.disabled) {
+  //   logger.log(`${pc.red('◆')} Disabled`);
+  //   return { success: true, pkg };
+  // }
 
-  if (!existsSync(folder)) {
-    const shouldClone =
-      deffered &&
-      (await confirm({
-        message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
-      }));
-    if (!shouldClone) {
-      logger.log(`Skipping ${pkgName}`);
-      return { success: false, pkg };
-    }
-    const gitLink = `git@github.com:${pkg.org}/${pkg.repository}.git`;
-    logger.log(`Cloning in ${pkgName}`);
-    await $({ verbose: false })`git clone -- ${gitLink} ${folder}`;
-    logger.log(`Cloned`);
-  }
+  // if (!existsSync(folder)) {
+  //   const shouldClone =
+  //     deffered &&
+  //     (await confirm({
+  //       message: `Folder ${pc.blue(relativeFolder)} does not exist. Clone it?`,
+  //     }));
+  //   if (!shouldClone) {
+  //     logger.log(`Skipping ${pkgName}`);
+  //     return { success: false, pkg };
+  //   }
+  //   const gitLink = `git@github.com:${pkg.org}/${pkg.repository}.git`;
+  //   logger.log(`Cloning in ${pkgName}`);
+  //   await $({ verbose: false })`git clone -- ${gitLink} ${folder}`;
+  //   logger.log(`Cloned`);
+  // }
 
-  const $$ = $({ cwd: folder, verbose: false });
+  // const $$ = $({ cwd: folder, verbose: false });
 
-  // is main branch
-  const { stdout: branch } = await $$`git branch --show-current`;
-  logger.log(`On branch ${pc.green(branch.trim())}`);
-  if (branch.trim() !== 'main') {
-    logger.log(`${pc.red('◆')} Not on main branch`);
-    return { success: false, pkg };
-  }
+  // // is main branch
+  // const { stdout: branch } = await $$`git branch --show-current`;
+  // logger.log(`On branch ${pc.green(branch.trim())}`);
+  // if (branch.trim() !== 'main') {
+  //   logger.log(`${pc.red('◆')} Not on main branch`);
+  //   return { success: false, pkg };
+  // }
 
-  // make sure there are no uncommited changes
-  const checkIsClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
-  const isClean = await checkIsClean();
-  if (checkCleanBefore && !isClean) {
-    logger.log(`${pc.red('◆')} Not clean`);
-    return { success: false, pkg };
-  }
+  // // make sure there are no uncommited changes
+  // const checkIsClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
+  // const isClean = await checkIsClean();
+  // if (checkCleanBefore && !isClean) {
+  //   logger.log(`${pc.red('◆')} Not clean`);
+  //   return { success: false, pkg };
+  // }
 
-  // pull latest
-  if (isClean) {
-    logger.log(`Pulling latest`);
-    await $$`git pull`;
-  }
+  // // pull latest
+  // if (isClean) {
+  //   logger.log(`Pulling latest`);
+  //   await $$`git pull`;
+  // }
 
-  const config = await loadConfig(logger, folder);
-  if (!config) {
-    return { success: false, pkg };
-  }
+  // const config = await loadConfig(logger, folder);
+  // if (!config) {
+  //   return { success: false, pkg };
+  // }
 
-  const KEEP_FILES = [
-    '.git',
-    'src',
-    'tests',
-    'README.md',
-    rebuildLockfile ? null : 'pnpm-lock.yaml',
-    'design',
-    'config.json',
-    forceInstall ? null : 'node_modules',
-    config.viteExample ? 'example' : null,
-    config.scripts ? 'scripts' : null,
-    ...config.keep,
-  ].filter(Boolean);
+  // const KEEP_FILES = [
+  //   '.git',
+  //   'src',
+  //   'tests',
+  //   'README.md',
+  //   rebuildLockfile ? null : 'pnpm-lock.yaml',
+  //   'design',
+  //   'config.json',
+  //   forceInstall ? null : 'node_modules',
+  //   config.viteExample ? 'example' : null,
+  //   config.scripts ? 'scripts' : null,
+  //   ...config.keep,
+  // ].filter(Boolean);
 
-  // remove all files except for the ones we want to keep
-  if (!fast) {
-    const allFiles = await readdir(folder);
-    const filesToRemove = allFiles.filter((file) => !KEEP_FILES.includes(file));
-    const prevPackageJson = await readJson(resolve(folder, 'package.json'));
-    // remove files
-    for (const file of filesToRemove) {
-      await rm(resolve(folder, file), { recursive: true, force: true });
-    }
-    // copy all files from template
-    const templateFolder = resolve('template');
-    await copyAll(templateFolder, folder);
-    // create package.json
-    const newPackageJson = createPackageJson(prevPackageJson, pkg, config);
-    await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
-    // create tsconfig.json
-    const tsconfigFile = createTsconfig(config);
-    await saveFile(folder, 'tsconfig.json', tsconfigFile);
-    // Create vitest.config.ts
-    const vitestConfig = createVitestConfig(config);
-    await saveFile(folder, 'vitest.config.ts', vitestConfig);
-    // add custom gitignore entries
-    if (config.gitignore.length > 0) {
-      const gitignorePath = resolve(folder, '.gitignore');
-      const gitignoreStr = await readFile(gitignorePath, 'utf-8');
-      const gitignoreLines = gitignoreStr.split('\n');
-      const newGitignoreLines = [...gitignoreLines, ...config.gitignore];
-      await writeFile(gitignorePath, newGitignoreLines.join('\n'));
-    }
-  }
+  // // remove all files except for the ones we want to keep
+  // if (!fast) {
+  //   const allFiles = await readdir(folder);
+  //   const filesToRemove = allFiles.filter((file) => !KEEP_FILES.includes(file));
+  //   const prevPackageJson = await readJson(resolve(folder, 'package.json'));
+  //   // remove files
+  //   for (const file of filesToRemove) {
+  //     await rm(resolve(folder, file), { recursive: true, force: true });
+  //   }
+  //   // copy all files from template
+  //   const templateFolder = resolve('template');
+  //   await copyAll(templateFolder, folder);
+  //   // create package.json
+  //   const newPackageJson = createPackageJson(prevPackageJson, pkg, config);
+  //   await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
+  //   // create tsconfig.json
+  //   const tsconfigFile = createTsconfig(config);
+  //   await saveFile(folder, 'tsconfig.json', tsconfigFile);
+  //   // Create vitest.config.ts
+  //   const vitestConfig = createVitestConfig(config);
+  //   await saveFile(folder, 'vitest.config.ts', vitestConfig);
+  //   // add custom gitignore entries
+  //   if (config.gitignore.length > 0) {
+  //     const gitignorePath = resolve(folder, '.gitignore');
+  //     const gitignoreStr = await readFile(gitignorePath, 'utf-8');
+  //     const gitignoreLines = gitignoreStr.split('\n');
+  //     const newGitignoreLines = [...gitignoreLines, ...config.gitignore];
+  //     await writeFile(gitignorePath, newGitignoreLines.join('\n'));
+  //   }
+  // }
 
-  // Install deps
-  logger.log(`Installing deps`);
-  await $$`pnpm i`;
+  // // Install deps
+  // logger.log(`Installing deps`);
+  // await $$`pnpm i`;
 
   let oudatedSuccess = true;
   if (checkOudated) {

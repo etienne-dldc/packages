@@ -11,6 +11,9 @@ dependencies:
   '@clack/prompts':
     specifier: ^0.6.3
     version: 0.6.3
+  '@dldc/stack':
+    specifier: ^4.0.2
+    version: 4.0.2
   '@inquirer/core':
     specifier: ^2.3.0
     version: 2.3.0
@@ -101,6 +104,10 @@ packages:
     dev: false
     bundledDependencies:
       - is-unicode-supported
+
+  /@dldc/stack@4.0.2:
+    resolution: {integrity: sha512-rbg0ey5PyESKA+ABG3cr7Q+WDC7le+MJ4HBK8XtHbrgE1xSpiUSjpmMcdhGaUNmR+6mmxAEMci+NfAy/psapeQ==}
+    dev: false
 
   /@esbuild-kit/cjs-loader@2.4.2:
     resolution: {integrity: sha512-BDXFbYOJzT/NBEtp71cvsrGPwGAMGRB/349rwKuoxNSiKjPraNNnlK6MIIabViCjqZugu6j+xeMDlEkWdHHJSg==}

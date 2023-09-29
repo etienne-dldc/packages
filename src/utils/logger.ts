@@ -2,6 +2,8 @@ export interface ILogger {
   log: (message: string) => void;
   commit: () => void;
   child: (prefix: string, header?: string[]) => ILogger;
+  // will show header on next log
+  reset: () => void;
   format: (message: string) => string;
   readonly prefix: string;
 }
@@ -36,6 +38,7 @@ export const Logger = (() => {
         commit,
         format,
         child: (subPrefix, headers) => child(prefix + subPrefix, headers),
+        reset: () => (headerPrinted = false),
       };
 
       function log(message: string) {

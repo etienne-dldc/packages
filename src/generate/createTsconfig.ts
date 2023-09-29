@@ -1,15 +1,15 @@
-import { IDldcConfig } from '../logic/loadDldcConfig';
+import { IDldcConfigResolved } from '../tasks/readPackageJson';
 import { json } from '../utils/json';
 
-export function createTsconfig(config: IDldcConfig): string {
+export function createTsconfig(dldcConfig: IDldcConfigResolved): string {
   return json({
     $schema: 'https://json.schemastore.org/tsconfig',
     include: [
       'src',
       'tests',
       'vitest.config.ts',
-      ...(config.viteExample ? ['example', 'vite.config.ts'] : []),
-      config.scripts && 'scripts',
+      ...(dldcConfig.viteExample ? ['example', 'vite.config.ts'] : []),
+      dldcConfig.scripts && 'scripts',
     ].filter(Boolean),
     compilerOptions: {
       rootDir: '.',
@@ -21,7 +21,7 @@ export function createTsconfig(config: IDldcConfig): string {
       importHelpers: false,
       moduleResolution: 'node',
       esModuleInterop: true,
-      ...(config.react ? { jsx: 'react-jsx' } : {}),
+      ...(dldcConfig.react ? { jsx: 'react-jsx' } : {}),
 
       isolatedModules: true,
       declaration: true,
@@ -34,7 +34,7 @@ export function createTsconfig(config: IDldcConfig): string {
       noUnusedParameters: true,
       noImplicitReturns: true,
       noFallthroughCasesInSwitch: true,
-      ...(config.skipLibCheck ? { skipLibCheck: true } : {}),
+      ...(dldcConfig.skipLibCheck ? { skipLibCheck: true } : {}),
     },
   });
 }

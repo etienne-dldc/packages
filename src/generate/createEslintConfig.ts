@@ -1,6 +1,6 @@
-import { IDldcConfig } from '../logic/loadDldcConfig';
+import { IDldcConfigResolved } from '../tasks/readPackageJson';
 
-export function createEslintConfig(config: IDldcConfig): any {
+export function createEslintConfig(dldcConfig: IDldcConfigResolved): any {
   return {
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -11,7 +11,7 @@ export function createEslintConfig(config: IDldcConfig): any {
     extends: [
       'plugin:@typescript-eslint/recommended-type-checked',
       'prettier',
-      config.react ? 'plugin:react-hooks/recommended' : null,
+      dldcConfig.react ? 'plugin:react-hooks/recommended' : null,
     ].filter(Boolean),
     root: true,
     rules: {

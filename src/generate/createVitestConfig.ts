@@ -1,17 +1,17 @@
-import { IDldcConfig } from '../logic/loadDldcConfig';
+import { IDldcConfigResolved } from '../tasks/readPackageJson';
 import { json } from '../utils/json';
 
-export function createVitestConfig(config: IDldcConfig) {
+export function createVitestConfig(dldcConfig: IDldcConfigResolved) {
   return [
     `import { defineConfig } from 'vitest/config';`,
-    config.react ? `import react from '@vitejs/plugin-react';` : null,
+    dldcConfig.react ? `import react from '@vitejs/plugin-react';` : null,
     ``,
     `export default defineConfig(${json({
-      plugins: config.react ? [json.raw(`react()`)] : [],
+      plugins: dldcConfig.react ? [json.raw(`react()`)] : [],
       test: {
-        environment: config.react ? 'jsdom' : undefined,
-        threads: config.vitestNoThreads ? false : undefined,
-        setupFiles: config.vitestSetupFile ? './tests/globalSetup.ts' : undefined,
+        environment: dldcConfig.react ? 'jsdom' : undefined,
+        threads: dldcConfig.vitestNoThreads ? false : undefined,
+        setupFiles: dldcConfig.vitestSetupFile ? './tests/globalSetup.ts' : undefined,
       },
     })});`,
   ]

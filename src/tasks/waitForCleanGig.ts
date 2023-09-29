@@ -1,14 +1,19 @@
 import pc from 'picocolors';
-import { IPkgUtils } from '../logic/pkgUtils';
+import { PkgStack } from '../logic/PkgStack';
 import { confirm } from '../prompts/confirm';
-import { ILogger } from '../utils/logger';
+
+interface IConfig {
+  silent?: boolean;
+}
 
 /**
  * Make sure there are no uncommited changes
  */
-export async function waitForCleanGig(logger: ILogger, pkg: IPkgUtils) {
+export async function waitForCleanGig(pkg: PkgStack, { silent = false }: IConfig = {}): Promise<PkgStack> {
+  const logger = pkg.base.logger;
+
   while (true) {
-    const { stdout: gitStatus } = await pkg.$$`git status --porcelain --branch`;
+    const { stdout: gitStatus } = await pkg.base.$$`git status --porcelain --branch`;
     const [branchStatus, ...files] = gitStatus.trim().split('\n');
     const pullPush = branchStatus.replace('## main...origin/main', '').trim();
     if (pullPush === '' && files.length === 0) {
@@ -18,8 +23,11 @@ export async function waitForCleanGig(logger: ILogger, pkg: IPkgUtils) {
     logger.log(`${pc.red('◆')} Repo is not clean (${changes})`);
     const tryAgain = await confirm({ logger, message: `Confirm to try again` });
     if (!tryAgain) {
-      break;
+      return pkg.skip();
     }
   }
-  logger.log(`${pc.blue('◆')} Repo is clean`);
+  if (!silent) {
+    logger.log(`${pc.blue('◆')} Repo is clean`);
+  }
+  return pkg;
 }
