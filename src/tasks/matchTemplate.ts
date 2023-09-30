@@ -1,6 +1,7 @@
 import { readdir } from 'fs-extra';
 import { readFile, rm, writeFile } from 'fs/promises';
 import { resolve } from 'path';
+import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
 import { createPackageJson } from '../generate/createPackageJson';
 import { createTsconfig } from '../generate/createTsconfig';
@@ -61,8 +62,9 @@ export async function matchTemplate(pkg: PkgStack): Promise<PkgStack> {
   }
 
   // Install deps
-  logger.log(`Installing deps`);
   await $$`pnpm i`;
+
+  logger.log(`${pc.blue('◆')} Template initialized`);
 
   return pkg;
 }

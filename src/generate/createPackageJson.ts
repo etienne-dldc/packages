@@ -1,6 +1,7 @@
 import { PkgStack } from '../logic/PkgStack';
 import { IPackageJsonFixed } from '../logic/packageJson';
 import { prettierConfig } from '../logic/prettierConfig';
+import { DevDepsKey } from '../tasks/checkDependencies';
 import { DldcConfigKey } from '../tasks/readDldcConfig';
 import { PackageJsonKey } from '../tasks/readPackageJson';
 import { createEslintConfig } from './createEslintConfig';
@@ -11,11 +12,7 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
   const prevScriptsScripts = Object.fromEntries(
     Object.entries(prevPackageJson.scripts ?? {}).filter(([key]) => key.startsWith('script:')),
   );
-  const additionalDevDependencies = Object.fromEntries(
-    Object.entries(prevPackageJson.devDependencies ?? {}).filter(([key]) =>
-      dldcConfig.additionalDevDependencies.includes(key),
-    ),
-  );
+  const devDependencies = pkg.getOrFail(DevDepsKey.Consumer);
 
   return {
     name: getPackageName(pkg),
@@ -62,44 +59,7 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
     },
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
-    devDependencies: {
-      '@types/node': '^20.7.0',
-      '@typescript-eslint/eslint-plugin': '^6.7.3',
-      '@typescript-eslint/parser': '^6.7.3',
-      '@vitest/coverage-v8': '^0.34.5',
-      'auto-changelog': '^2.4.0',
-      'eslint-config-prettier': '^9.0.0',
-      'release-it': '^16.2.0',
-      eslint: '^8.50.0',
-      prettier: '^3.0.3',
-      rimraf: '^5.0.1',
-      tsup: '^7.2.0',
-      typescript: '^5.2.2',
-      vitest: '^0.34.5',
-      ...(dldcConfig.viteExample ? { vite: '^4.4.9' } : {}),
-      ...(prevPackageJson.peerDependencies ?? {}),
-      ...additionalDevDependencies,
-      ...(dldcConfig.react
-        ? {
-            '@testing-library/jest-dom': '^6.1.3',
-            '@testing-library/react': '^14.0.0',
-            '@testing-library/user-event': '^14.5.1',
-            '@types/react-dom': '^18.2.7',
-            '@types/react': '^18.2.22',
-            '@vitejs/plugin-react': '^4.1.0',
-            'eslint-plugin-react-hooks': '^4.6.0',
-            'react-dom': '^18.2.0',
-            jsdom: '^22.1.0',
-            react: '^18.2.0',
-          }
-        : undefined),
-      ...(dldcConfig.scripts
-        ? {
-            tsx: '^3.12.10',
-            esbuild: '^0.19.3',
-          }
-        : undefined),
-    },
+    devDependencies,
     packageManager: 'pnpm@8.6.1',
     publishConfig: {
       access: 'public',

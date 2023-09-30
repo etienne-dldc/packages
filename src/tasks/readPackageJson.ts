@@ -5,7 +5,7 @@ import pc from 'picocolors';
 import { z } from 'zod';
 import { PkgStack } from '../logic/PkgStack';
 import { IPackageJsonFixed } from '../logic/packageJson';
-import { confirm } from '../prompts/confirm';
+import { RETRY } from '../utils/pipeIfWithRetry';
 
 const DldcConfigSchema = z.strictObject({
   additionalDevDependencies: z.array(z.string()).optional(),
@@ -33,19 +33,12 @@ export const PackageJsonKey = Key.create<IPackageJsonFixed>('PackageJson');
 export async function readPackageJson(pkg: PkgStack): Promise<PkgStack> {
   const logger = pkg.base.logger;
   let packageJson: IPackageJsonFixed;
-  while (true) {
-    packageJson = (await readJson(resolve(pkg.base.folder, 'package.json'))) as IPackageJsonFixed;
-    // TODO validate package.json
-    const dldcConfig = DldcConfigSchema.safeParse(packageJson.dldc ?? {});
-    if (dldcConfig.success) {
-      break;
-    }
+  packageJson = (await readJson(resolve(pkg.base.folder, 'package.json'))) as IPackageJsonFixed;
+  const dldcConfig = DldcConfigSchema.safeParse(packageJson.dldc ?? {});
+  if (!dldcConfig.success) {
     logger.log(`${pc.red('◆')} Invalid "dldc" config in package.json`);
     logger.log(`${pc.red('◆')} ${dldcConfig.error.message}`);
-    const tryAgain = await confirm({ logger: logger, message: `Confirm to try again` });
-    if (!tryAgain) {
-      return pkg.skip();
-    }
+    throw RETRY;
   }
   logger.log(`${pc.blue('◆')} Valid package.json`);
   return pkg.with(PackageJsonKey.Provider(packageJson));

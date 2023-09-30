@@ -1,10 +1,14 @@
-export async function pipeIf<T>(
-  value: T,
-  condition: (value: T) => boolean,
-  ...callbacks: ((value: T) => Promise<T> | T)[]
-): Promise<T> {
+export interface IPipeIfConfig<T> {
+  condition: (value: T) => boolean;
+  steps: (((value: T) => Promise<T> | T) | null)[];
+}
+
+export async function pipeIf<T>(value: T, { condition, steps }: IPipeIfConfig<T>): Promise<T> {
   let current: T = value;
-  for (const callback of callbacks) {
+  for (const callback of steps) {
+    if (!callback) {
+      continue;
+    }
     if (!condition(current)) {
       return current;
     }
