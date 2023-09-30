@@ -9,5 +9,6 @@ export async function checkPendingRelease(pkg: PkgStack): Promise<PkgStack> {
     logger.log(`${pc.yellow('◆')} Pending release`);
     throw RETRY;
   }
+  logger.log(`${pc.blue('◆')} No pending release`);
   return pkg;
 }

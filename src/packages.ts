@@ -40,7 +40,7 @@ export const packages = [
 
   { org: 'etienne-dldc', repository: 'umbrella-common' },
   { org: 'etienne-dldc', repository: 'umbrella-client' },
-  { org: 'etienne-dldc', repository: 'umbrella-core' },
+  { org: 'etienne-dldc', repository: 'umbrella-core', disabled: true },
 
   { org: 'dldc-packages', repository: 'icons-bundler', disabled: true },
   { org: 'dldc-packages', repository: 'local-sql', disabled: true },

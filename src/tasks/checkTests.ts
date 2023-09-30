@@ -7,9 +7,9 @@ export async function checkTests(pkg: PkgStack): Promise<PkgStack> {
   try {
     await $$`pnpm test`;
   } catch (error) {
-    logger.log(`${pc.red('◆')} tests failed`);
+    logger.log(`${pc.red('◆')} Tests failed`);
     throw RETRY;
   }
-  logger.log(`${pc.blue('◆')} tests passed`);
+  logger.log(`${pc.blue('◆')} Tests passed`);
   return pkg;
 }

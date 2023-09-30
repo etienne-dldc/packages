@@ -7,9 +7,9 @@ export async function checkLinting(pkg: PkgStack): Promise<PkgStack> {
   try {
     await $$`pnpm run lint:fix`;
   } catch (error) {
-    logger.log(`${pc.red('◆')} lint:fix failed`);
+    logger.log(`${pc.red('◆')} Linting failed`);
     throw RETRY;
   }
-  logger.log(`${pc.blue('◆')} lint:fix passed`);
+  logger.log(`${pc.blue('◆')} Linting passed`);
   return pkg;
 }

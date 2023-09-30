@@ -7,9 +7,9 @@ export async function checkBuild(pkg: PkgStack): Promise<PkgStack> {
   try {
     await $$`pnpm run build`;
   } catch (error) {
-    logger.log(`${pc.red('◆')} build failed`);
+    logger.log(`${pc.red('◆')} Build failed`);
     throw RETRY;
   }
-  logger.log(`${pc.blue('◆')} build passed`);
+  logger.log(`${pc.blue('◆')} Build passed`);
   return pkg;
 }
