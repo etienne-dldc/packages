@@ -1,23 +1,25 @@
 import { $ } from 'execa';
 import pc from 'picocolors';
-import { pkgUtilsBase } from './logic/pkgUtils';
-import { IPackage, packages } from './packages';
+import { PkgStack } from './logic/PkgStack';
+import { packages } from './packages';
 import { Logger } from './utils/logger';
 
 main().catch(console.error);
 
 async function main() {
-  for (const pkg of packages) {
+  const logger = Logger.create();
+  for (const pkgBase of packages) {
+    const pkg = PkgStack.create(logger, pkgBase);
+    logger.log(pkg.base.coloredName);
     await resetPackage(pkg);
   }
 }
 
-async function resetPackage(pkg: IPackage) {
-  const { prefix, pkgName, folder } = pkgUtilsBase(pkg);
-  const logger = Logger.create();
-  logger.log(pkgName);
+async function resetPackage(pkg: PkgStack) {
+  const { prefix, logger, folder, coloredName } = pkg.base;
+  logger.log(coloredName);
   const subLogger = logger.child(prefix);
-  if (pkg.disabled) {
+  if (pkg.skipped) {
     logger.log(`${pc.red('◆')} Disabled`);
     return;
   }
@@ -29,7 +31,7 @@ async function resetPackage(pkg: IPackage) {
     subLogger.log(`${pc.green('●')} No changes`);
     return;
   }
-  subLogger.log(`Resetting ${pkgName}`);
+  subLogger.log(`Resetting`);
   await $$`git reset --hard`;
   subLogger.log(`${pc.blue('●')} Reset`);
 }

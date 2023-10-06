@@ -1,6 +1,5 @@
 import pc from 'picocolors';
 import { PkgStack } from './logic/PkgStack';
-import { askForConfig } from './logic/askForConfig';
 import { packages } from './packages';
 import { confirm } from './prompts/confirm';
 import { checkBuild } from './tasks/checkBuild';
@@ -26,8 +25,6 @@ async function main() {
   const logger = Logger.create();
 
   logger.log(`${pc.blue('◆')} ${packages.length} packages`);
-
-  const config = await askForConfig(logger);
 
   // All packages
   const pkgsBase = packages.map((pkg) => PkgStack.create(logger, pkg)).filter((pkg) => !pkg.skipped);

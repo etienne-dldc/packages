@@ -1,6 +1,7 @@
 import { pipeIf } from './pipeIf';
 
 export const RETRY = Symbol('RETRY');
+export const RETRY_NOW = Symbol('RETRY_NOW');
 
 export interface IPipeIfWithRetryConfig<T> {
   condition: (value: T) => boolean;
@@ -20,10 +21,14 @@ export async function pipeIfWithRetry<T>(
         results.push(result);
         break;
       } catch (error) {
-        if (error !== RETRY) {
-          throw error;
+        if (error === RETRY_NOW) {
+          continue;
         }
-        await onRetry(value);
+        if (error === RETRY) {
+          await onRetry(value);
+          continue;
+        }
+        throw error;
       }
     }
   }
