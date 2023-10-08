@@ -1,6 +1,7 @@
 import pc from 'picocolors';
 import { PkgStack } from '../logic/PkgStack';
-import { RETRY } from '../utils/pipeIfWithRetry';
+import { confirm } from '../prompts/confirm';
+import { RETRY_NOW } from '../utils/pipeIfWithRetry';
 
 interface OudatedData {
   current: string;
@@ -31,7 +32,11 @@ export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
         outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
       });
     }
-    throw RETRY;
+    const shouldRetry = await confirm({ logger: pkg.base.logger, message: `Confirm to try again, no to skip release` });
+    if (shouldRetry) {
+      throw RETRY_NOW;
+    }
+    return pkg;
   }
 
   logger.log(`${pc.blue('◆')} Deps are up to date`);
