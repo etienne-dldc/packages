@@ -60,7 +60,7 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
     devDependencies,
-    packageManager: 'pnpm@8.6.1',
+    packageManager: 'pnpm@8.9.0',
     publishConfig: {
       access: 'public',
       registry: 'https://registry.npmjs.org',
