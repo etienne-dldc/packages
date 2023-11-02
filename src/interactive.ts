@@ -44,6 +44,7 @@ async function main() {
       readDldcConfig,
       checkDependencies,
       matchTemplate,
+      checkCleanGig,
       checkOudated,
       checkLinting,
       checkTypes,
