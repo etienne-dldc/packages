@@ -3,8 +3,8 @@ import { json } from '../utils/json';
 
 export function createVitestConfig(dldcConfig: IDldcConfigResolved) {
   return [
-    `import { defineConfig } from 'vitest/config';`,
     dldcConfig.react ? `import react from '@vitejs/plugin-react';` : null,
+    `import { defineConfig } from 'vitest/config';`,
     ``,
     `export default defineConfig(${json({
       plugins: dldcConfig.react ? [json.raw(`react()`)] : [],
