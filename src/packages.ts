@@ -38,10 +38,6 @@ export const packages = [
   { org: 'dldc-packages', repository: 'zendb-sqljs' },
   { org: 'dldc-packages', repository: 'zenapi' },
 
-  { org: 'etienne-dldc', repository: 'umbrella-common' },
-  { org: 'etienne-dldc', repository: 'umbrella-client' },
-  { org: 'etienne-dldc', repository: 'umbrella-core', disabled: true },
-
   { org: 'dldc-packages', repository: 'icons-bundler', disabled: true },
   { org: 'dldc-packages', repository: 'local-sql', disabled: true },
   { org: 'dldc-packages', repository: 'react-lazy-icons', disabled: true },
