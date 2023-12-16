@@ -15,7 +15,7 @@ const DldcConfigSchema = z.strictObject({
   scripts: z.boolean().optional(), // add scripts to package.json (and install tsx)
   // disable threads for vitest (used by draaw)
   // needed for canvas https://github.com/vitest-dev/vitest/issues/740
-  vitestNoThreads: z.boolean().optional(),
+  vitestSingleThread: z.boolean().optional(),
   skipLibCheck: z.boolean().optional(), // add skipLibCheck to tsconfig
   gitignore: z.array(z.string()).optional(), // add to .gitignore
   keep: z.array(z.string()).optional(), // files / folders to keep

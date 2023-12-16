@@ -34,7 +34,8 @@ export function createTsconfig(dldcConfig: IDldcConfigResolved): string {
       noUnusedParameters: true,
       noImplicitReturns: true,
       noFallthroughCasesInSwitch: true,
-      ...(dldcConfig.skipLibCheck ? { skipLibCheck: true } : {}),
+      skipLibCheck: true, // Temp fix for vitest
+      // ...(dldcConfig.skipLibCheck ? { skipLibCheck: true } : {}),
     },
   });
 }

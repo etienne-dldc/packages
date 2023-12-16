@@ -7,7 +7,7 @@ const DEFAULT_DLDC_CONFIG: IDldcConfigResolved = {
   react: false,
   viteExample: false,
   vitestSetupFile: false,
-  vitestNoThreads: false,
+  vitestSingleThread: false,
   scripts: false,
   skipLibCheck: false,
   gitignore: [],

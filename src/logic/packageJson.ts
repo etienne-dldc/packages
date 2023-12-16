@@ -1,10 +1,10 @@
 import { PackageJson } from 'types-package-json';
-import { IDldcConfig } from './validateDldcConfig';
+import { IDldcConfig } from '../tasks/readPackageJson';
 
 export interface IPackageJsonFixed extends PackageJson {
   sideEffects: boolean;
-  exports: Record<string, Record<string, string>>;
-  module: string;
+  exports: Record<string, Record<'import' | 'require' | 'types', string>>;
+  type: string;
   types: string;
   packageManager: string;
   publishConfig: {

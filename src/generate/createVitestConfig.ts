@@ -10,7 +10,7 @@ export function createVitestConfig(dldcConfig: IDldcConfigResolved) {
       plugins: dldcConfig.react ? [json.raw(`react()`)] : [],
       test: {
         environment: dldcConfig.react ? 'jsdom' : undefined,
-        threads: dldcConfig.vitestNoThreads ? false : undefined,
+        poolOptions: dldcConfig.vitestSingleThread ? { threads: { singleThread: true } } : undefined,
         setupFiles: dldcConfig.vitestSetupFile ? './tests/globalSetup.ts' : undefined,
       },
     })});`,
