@@ -33,9 +33,9 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
     type: 'module',
     exports: {
       '.': {
+        types: './dist/mod.d.ts',
         import: './dist/mod.js',
         require: './dist/mod.cjs',
-        types: './dist/mod.d.ts',
       },
     },
     main: './dist/mod.js',
