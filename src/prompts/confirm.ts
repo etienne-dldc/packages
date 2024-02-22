@@ -1,10 +1,11 @@
-import { AsyncPromptConfig, createPrompt, isEnterKey, useKeypress, useState } from '@inquirer/core';
+import { createPrompt, isEnterKey, useKeypress, useState } from '@inquirer/core';
 import pc from 'picocolors';
 import { ILogger } from '../utils/logger';
 
-interface ConfirmConfig extends AsyncPromptConfig {
+interface ConfirmConfig {
   logger: ILogger;
   default?: boolean;
+  message: string;
 }
 
 const createConfirm = createPrompt<boolean, ConfirmConfig>(

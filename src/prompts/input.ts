@@ -1,5 +1,4 @@
 import {
-  AsyncPromptConfig,
   createPrompt,
   isBackspaceKey,
   isEnterKey,
@@ -10,7 +9,8 @@ import {
 import pc from 'picocolors';
 import { ILogger } from '../utils/logger';
 
-export interface InputConfig extends AsyncPromptConfig {
+export interface InputConfig {
+  message: string;
   logger: ILogger;
   default?: string;
   transformer?: (value: string, { isFinal }: { isFinal: boolean }) => string;
@@ -25,7 +25,7 @@ export const input = createPrompt<string, InputConfig>((config, done) => {
   const [value, setValue] = useState<string>('');
 
   const isLoading = status === 'loading';
-  const prefix = usePrefix(isLoading);
+  const prefix = usePrefix({ isLoading });
 
   useKeypress(async (key, rl) => {
     // Ignore keypress while our prompt is doing other processing.
