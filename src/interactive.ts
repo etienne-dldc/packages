@@ -69,5 +69,5 @@ function skippedCondition(pkg: PkgStack, { silent = false }: { silent?: boolean 
 }
 
 async function onError(pkg: PkgStack) {
-  await confirm({ logger: pkg.base.logger, message: `Confirm to try again` });
+  await confirm(pkg.base.logger, { message: `Confirm to try again` });
 }

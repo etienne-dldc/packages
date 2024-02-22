@@ -8,9 +8,15 @@ dependencies:
   '@dldc/stack':
     specifier: ^4.1.5
     version: 4.1.5
+  '@inquirer/confirm':
+    specifier: ^3.0.0
+    version: 3.0.0
   '@inquirer/core':
     specifier: ^7.0.0
     version: 7.0.0
+  '@inquirer/expand':
+    specifier: ^2.0.0
+    version: 2.0.0
   '@types/fs-extra':
     specifier: ^11.0.4
     version: 11.0.4
@@ -272,6 +278,14 @@ packages:
     dev: false
     optional: true
 
+  /@inquirer/confirm@3.0.0:
+    resolution: {integrity: sha512-LHeuYP1D8NmQra1eR4UqvZMXwxEdDXyElJmmZfU44xdNLL6+GcQBS0uE16vyfZVjH8c22p9e+DStROfE/hyHrg==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@inquirer/core': 7.0.0
+      '@inquirer/type': 1.2.0
+    dev: false
+
   /@inquirer/core@7.0.0:
     resolution: {integrity: sha512-g13W5yEt9r1sEVVriffJqQ8GWy94OnfxLCreNSOTw0HPVcszmc/If1KIf7YBmlwtX4klmvwpZHnQpl3N7VX2xA==}
     engines: {node: '>=18'}
@@ -290,6 +304,16 @@ packages:
       signal-exit: 4.1.0
       strip-ansi: 6.0.1
       wrap-ansi: 6.2.0
+    dev: false
+
+  /@inquirer/expand@2.0.0:
+    resolution: {integrity: sha512-2VETEz+RyRrIeBwULKc5o+PJzKqbsibyT6IY0oP0XvM/17flO6eW7P+rdGCAvFP6g2hKieIH23ZVrcgsosb1/g==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@inquirer/core': 7.0.0
+      '@inquirer/type': 1.2.0
+      chalk: 4.1.2
+      figures: 3.2.0
     dev: false
 
   /@inquirer/type@1.2.0:

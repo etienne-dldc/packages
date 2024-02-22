@@ -32,7 +32,7 @@ export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
         outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
       });
     }
-    const shouldRetry = await confirm({ logger: pkg.base.logger, message: `Confirm to try again, no to skip` });
+    const shouldRetry = await confirm(pkg.base.logger, { message: `Confirm to try again, no to skip` });
     if (shouldRetry) {
       throw RETRY_NOW;
     }

@@ -9,8 +9,7 @@ export async function ensureCloned(pkg: PkgStack): Promise<PkgStack> {
   const logger = pkg.base.logger;
 
   if (!existsSync(pkg.base.folder)) {
-    const shouldClone = await confirm({
-      logger,
+    const shouldClone = await confirm(logger, {
       message: `Folder ${pc.blue(pkg.base.relativeFolder)} does not exist. Clone it?`,
     });
     if (!shouldClone) {

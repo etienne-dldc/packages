@@ -10,7 +10,7 @@ export async function checkPendingRelease(pkg: PkgStack): Promise<PkgStack> {
     logger.log(`${pc.yellow('◆')} Pending release`);
     const releaseLogger = logger.child('  ');
     result.stdout.split('\n').forEach((line) => releaseLogger.log(line));
-    const shouldRetry = await confirm({ logger: pkg.base.logger, message: `Confirm to try again, no to skip` });
+    const shouldRetry = await confirm(pkg.base.logger, { message: `Confirm to try again, no to skip` });
     if (shouldRetry) {
       throw RETRY_NOW;
     }
