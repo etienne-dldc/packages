@@ -1,5 +1,5 @@
 import pc from 'picocolors';
-import { PkgStack } from './logic/PkgStack';
+import { PkgStack, TGlobalConfig } from './logic/PkgStack';
 import { packages } from './packages';
 import { input } from './prompts/input';
 import { Logger } from './utils/logger';
@@ -7,10 +7,12 @@ import { Logger } from './utils/logger';
 main().catch(console.error);
 
 async function main() {
+  const globalConfig: TGlobalConfig = {};
+
   const logger = Logger.create();
-  const message = await input({ logger, message: 'Commit message' });
+  const message = await input(logger, { message: 'Commit message' });
   for (const pkgBase of packages) {
-    const pkg = PkgStack.create(logger, pkgBase);
+    const pkg = PkgStack.create(logger, pkgBase, globalConfig);
     logger.log(pkg.base.coloredName);
     await commitPackage(pkg, message);
   }

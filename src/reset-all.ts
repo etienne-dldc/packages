@@ -1,15 +1,17 @@
 import { $ } from 'execa';
 import pc from 'picocolors';
-import { PkgStack } from './logic/PkgStack';
+import { PkgStack, TGlobalConfig } from './logic/PkgStack';
 import { packages } from './packages';
 import { Logger } from './utils/logger';
 
 main().catch(console.error);
 
 async function main() {
+  const globalConfig: TGlobalConfig = {};
+
   const logger = Logger.create();
   for (const pkgBase of packages) {
-    const pkg = PkgStack.create(logger, pkgBase);
+    const pkg = PkgStack.create(logger, pkgBase, globalConfig);
     logger.log(pkg.base.coloredName);
     await resetPackage(pkg);
   }

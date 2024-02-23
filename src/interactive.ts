@@ -1,7 +1,9 @@
 import pc from 'picocolors';
-import { PkgStack } from './logic/PkgStack';
-import { packages } from './packages';
+import { PkgStack, TGlobalConfig } from './logic/PkgStack';
+import { IPackage, packages } from './packages';
 import { confirm } from './prompts/confirm';
+import { expand } from './prompts/expand';
+import { select } from './prompts/select';
 import { checkBuild } from './tasks/checkBuild';
 import { checkCleanGig } from './tasks/checkCleanGig';
 import { checkDependencies } from './tasks/checkDependencies';
@@ -16,7 +18,7 @@ import { matchTemplate } from './tasks/matchTemplate';
 import { readDldcConfig } from './tasks/readDldcConfig';
 import { readPackageJson } from './tasks/readPackageJson';
 import { asyncMap } from './utils/asyncMap';
-import { Logger } from './utils/logger';
+import { ILogger, Logger } from './utils/logger';
 import { pipeIfWithRetry } from './utils/pipeIfWithRetry';
 
 main().catch(console.error);
@@ -24,10 +26,16 @@ main().catch(console.error);
 async function main() {
   const logger = Logger.create();
 
-  logger.log(`${pc.blue('◆')} ${packages.length} packages`);
+  const globalConfig: TGlobalConfig = {};
+
+  const packagesToCheck = await selectPackages(logger);
+
+  logger.log(`${pc.blue('◆')} ${packagesToCheck.length} packages`);
 
   // All packages
-  const pkgsBase = packages.map((pkg) => PkgStack.create(logger, pkg)).filter((pkg) => !pkg.skipped);
+  const pkgsBase = packagesToCheck
+    .map((pkg) => PkgStack.create(logger, pkg, globalConfig))
+    .filter((pkg) => !pkg.skipped);
   const pkgsCloned = await asyncMap(pkgsBase, async (pkg) => ensureCloned(pkg));
   pkgsCloned.forEach((pkg) => pkg.base.logger.reset());
   const pkgsReady = await pipeIfWithRetry(pkgsCloned, {
@@ -70,4 +78,23 @@ function skippedCondition(pkg: PkgStack, { silent = false }: { silent?: boolean 
 
 async function onError(pkg: PkgStack) {
   await confirm(pkg.base.logger, { message: `Confirm to try again` });
+}
+
+async function selectPackages(logger: ILogger): Promise<readonly IPackage[]> {
+  const mode = await expand(logger, {
+    message: 'Select mode',
+    expanded: true,
+    choices: [
+      { key: 'a', name: 'All', value: 'all' },
+      { key: 's', name: 'Select', value: 'select' },
+    ],
+  });
+  if (mode === 'all') {
+    return packages;
+  }
+  const start = await select(logger, {
+    message: 'Select start package',
+    choices: packages.map((pkg) => ({ name: pkg.repository, value: pkg })),
+  });
+  return packages.slice(packages.indexOf(start));
 }

@@ -1,6 +1,6 @@
 import pc from 'picocolors';
 import { PkgStack } from '../logic/PkgStack';
-import { confirm } from '../prompts/confirm';
+import { expand } from '../prompts/expand';
 import { RETRY_NOW } from '../utils/pipeIfWithRetry';
 
 interface OudatedData {
@@ -32,13 +32,44 @@ export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
         outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
       });
     }
-    const shouldRetry = await confirm(pkg.base.logger, { message: `Confirm to try again, no to skip` });
-    if (shouldRetry) {
-      throw RETRY_NOW;
+    const action = await expand(logger, {
+      message: `Oudated dependencies (${oudatedEntries.length})`,
+      choices: [
+        { key: 'r', name: 'Retry', value: 'retry' },
+        { key: 's', name: 'Skip', value: 'skip' },
+        { key: 'u', name: 'Update', value: 'update' },
+      ],
+    });
+    switch (action) {
+      case 'retry':
+        throw RETRY_NOW;
+      case 'skip':
+        break;
+      case 'update': {
+        await updateDependencies(pkg);
+        throw RETRY_NOW;
+      }
     }
     return pkg;
   }
 
   logger.log(`${pc.blue('◆')} Deps are up to date`);
+  return pkg;
+}
+
+async function updateDependencies(pkg: PkgStack) {
+  const { logger, $$ } = pkg.base;
+  const { stdout: branch } = await $$`git branch --show-current`;
+  if (branch.trim() !== 'main') {
+    logger.log(`${pc.red('◆')} Not on main branch (current branch is ${pc.green(branch.trim())}) `);
+    throw RETRY_NOW;
+  }
+  await $$`pnpm update --latest`;
+  logger.log(`${pc.green('◆')} Dependencies updated`);
+  await $$`git add .`;
+  await $$`git commit -m ${`Update dependencies`}`;
+  logger.log(`${pc.green('◆')} Created update commit`);
+  await $$`git push`;
+  logger.log(`${pc.green('◆')} Update commit pushed`);
   return pkg;
 }

@@ -17,13 +17,22 @@ export interface IPkgBase {
   readonly logger: ILogger;
 }
 
+export interface TGlobalConfig {
+  lastCommitMessage?: string;
+}
+
 export const PkgBaseKey = Key.create<IPkgBase>('PkgBase');
 export const SkippedKey = Key.create<boolean>('Skipped');
+export const GlobalConfigKey = Key.create<TGlobalConfig>('GlobalConfig');
 
 export class PkgStack extends Stack {
-  static create(logger: ILogger, pkg: IPackage): PkgStack {
+  static create(logger: ILogger, pkg: IPackage, globalConfig: TGlobalConfig): PkgStack {
     const base = pkgBase(logger, pkg);
-    return new PkgStack().with(PkgBaseKey.Provider(base), SkippedKey.Provider(base.disabled));
+    return new PkgStack().with(
+      PkgBaseKey.Provider(base),
+      SkippedKey.Provider(base.disabled),
+      GlobalConfigKey.Provider(globalConfig),
+    );
   }
 
   get base(): IPkgBase {
@@ -32,6 +41,10 @@ export class PkgStack extends Stack {
 
   get skipped(): boolean {
     return this.getOrFail(SkippedKey.Consumer);
+  }
+
+  get globalConfig(): TGlobalConfig {
+    return this.getOrFail(GlobalConfigKey.Consumer);
   }
 
   skip(): this {

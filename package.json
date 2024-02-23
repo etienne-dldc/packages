@@ -23,6 +23,8 @@
     "@inquirer/confirm": "^3.0.0",
     "@inquirer/core": "^7.0.0",
     "@inquirer/expand": "^2.0.0",
+    "@inquirer/input": "^2.0.0",
+    "@inquirer/select": "^2.0.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.20",
     "@types/prompts": "^2.4.9",

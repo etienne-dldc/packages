@@ -17,6 +17,12 @@ dependencies:
   '@inquirer/expand':
     specifier: ^2.0.0
     version: 2.0.0
+  '@inquirer/input':
+    specifier: ^2.0.0
+    version: 2.0.0
+  '@inquirer/select':
+    specifier: ^2.0.0
+    version: 2.0.0
   '@types/fs-extra':
     specifier: ^11.0.4
     version: 11.0.4
@@ -312,6 +318,25 @@ packages:
     dependencies:
       '@inquirer/core': 7.0.0
       '@inquirer/type': 1.2.0
+      chalk: 4.1.2
+      figures: 3.2.0
+    dev: false
+
+  /@inquirer/input@2.0.0:
+    resolution: {integrity: sha512-qOjxSHLzqp/u6TvK7UtidPERoCa6BSSKyKG17aEaSOBl9uAQ4XIIqs9TtcEqwDloakarWS6xxTfR0sE1qvLwIQ==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@inquirer/core': 7.0.0
+      '@inquirer/type': 1.2.0
+    dev: false
+
+  /@inquirer/select@2.0.0:
+    resolution: {integrity: sha512-ZxWP1gHbReAH6HdoNQRV/9W/UjgKSeiiQX2DxJ6w3GDiQeC3fRAL+lukuMM+QGteGqaTjWwIEWhPLvgbGIrRgg==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@inquirer/core': 7.0.0
+      '@inquirer/type': 1.2.0
+      ansi-escapes: 4.3.2
       chalk: 4.1.2
       figures: 3.2.0
     dev: false

@@ -1,10 +1,7 @@
 import expandBase from '@inquirer/expand';
 import { ILogger } from '../utils/logger';
 
-type ExpandChoice<T extends string> =
-  | { key: T; name: string }
-  | { key: T; value: string }
-  | { key: T; name: string; value: string };
+type ExpandChoice<T extends string> = { key: string; name: string; value: T };
 
 interface ExpandConfig<T extends string> {
   message: string;
