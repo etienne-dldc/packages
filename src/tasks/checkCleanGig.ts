@@ -35,7 +35,7 @@ export async function checkCleanGig(pkg: PkgStack, { silent = false }: IConfig =
     });
     switch (action) {
       case 'retry':
-        throw RETRY;
+        throw RETRY_NOW;
       case 'skip':
         break;
       case 'commit': {

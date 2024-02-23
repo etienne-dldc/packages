@@ -3,6 +3,7 @@ import pc from 'picocolors';
 import { PkgStack } from '../logic/PkgStack';
 import { input } from '../prompts/input';
 import { select } from '../prompts/select';
+import { ILogger } from '../utils/logger';
 import { RETRY_NOW } from '../utils/pipeIfWithRetry';
 
 export async function checkPendingRelease(pkg: PkgStack): Promise<PkgStack> {
@@ -32,13 +33,27 @@ export async function checkPendingRelease(pkg: PkgStack): Promise<PkgStack> {
       logger.log(`${pc.blue('◆')} Skipped pending release`);
       return pkg;
     }
-    // release
-    const otp = await input(logger, { message: 'OTP' });
-    const releaseResult = await $$`pnpm exec release-it ${action} --ci --npm.otp=${otp}`;
-    logger.log(`${pc.green('◆')} Released`);
-    releaseResult.stdout.split('\n').forEach((line) => releaseLogger.log(line));
-    throw RETRY_NOW;
+    await release(pkg, releaseLogger, action);
   }
   logger.log(`${pc.blue('◆')} No pending release`);
   return pkg;
+}
+
+async function release(pkg: PkgStack, releaseLogger: ILogger, bump: 'patch' | 'minor' | 'major') {
+  const { $$, logger } = pkg.base;
+
+  // release
+  const otp = await input(logger, { message: 'OTP' });
+
+  const releaseResult = await $$({ reject: false })`pnpm exec release-it ${bump} --ci --npm.otp=${otp}`;
+
+  if (releaseResult.exitCode !== 0) {
+    logger.log(`${pc.red('◆')} Failed to release`);
+    releaseResult.stderr.split('\n').forEach((line) => releaseLogger.log(line));
+    throw RETRY_NOW;
+  }
+
+  logger.log(`${pc.green('◆')} Released`);
+  releaseResult.stdout.split('\n').forEach((line) => releaseLogger.log(line));
+  throw RETRY_NOW;
 }
