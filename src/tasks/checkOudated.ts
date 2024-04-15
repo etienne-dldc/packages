@@ -11,9 +11,11 @@ interface OudatedData {
   dependencyType: string;
 }
 
+const oudatedPatterns = '!eslint';
+
 export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
   const { logger, $$ } = pkg.base;
-  const oudatedStr = (await $$({ reject: false })`pnpm outdated --format json`).stdout;
+  const oudatedStr = (await $$({ reject: false })`pnpm outdated ${oudatedPatterns} --format json`).stdout;
   const oudated = JSON.parse(oudatedStr) as Record<string, OudatedData>;
   const oudatedEntries = Object.entries(oudated);
   if (oudatedEntries.length > 0) {
@@ -64,7 +66,7 @@ async function updateDependencies(pkg: PkgStack) {
     logger.log(`${pc.red('◆')} Not on main branch (current branch is ${pc.green(branch.trim())}) `);
     throw RETRY_NOW;
   }
-  await $$`pnpm update --latest`;
+  await $$`pnpm update ${oudatedPatterns} --latest`;
   logger.log(`${pc.green('◆')} Dependencies updated`);
   await $$`git add .`;
   await $$`git commit -m ${`Update dependencies`}`;
