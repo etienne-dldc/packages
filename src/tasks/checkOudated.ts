@@ -11,7 +11,7 @@ interface OudatedData {
   dependencyType: string;
 }
 
-const oudatedPatterns = '!eslint';
+const oudatedPatterns = '"!eslint" "!@dldc/erreur"';
 
 export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
   const { logger, $$ } = pkg.base;

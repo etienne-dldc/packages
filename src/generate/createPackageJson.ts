@@ -50,6 +50,7 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
       test: 'pnpm run lint && vitest run --coverage',
       'test:run': 'vitest run',
       'test:watch': 'vitest --watch',
+      'test:watch:coverage': 'vitest --watch --coverage',
       changelog:
         'auto-changelog --stdout --hide-credit true --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/main/templates/changelog-compact.hbs',
       typecheck: 'tsc',

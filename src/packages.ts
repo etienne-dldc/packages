@@ -11,8 +11,8 @@ export type Packages = readonly IPackage[];
 export type PackageName = (typeof packages)[number]['repository'];
 
 export const packages = [
-  { org: 'dldc-packages', repository: 'stack' },
   { org: 'dldc-packages', repository: 'erreur' },
+  { org: 'dldc-packages', repository: 'stack' },
   { org: 'dldc-packages', repository: 'compose' },
   { org: 'dldc-packages', repository: 'mappemonde' },
   { org: 'dldc-packages', repository: 'pubsub' },
