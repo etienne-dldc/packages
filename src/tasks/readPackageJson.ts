@@ -13,12 +13,13 @@ const DldcConfigSchema = z.strictObject({
   viteExample: z.boolean().optional(), // example folder with vite
   vitestSetupFile: z.boolean().optional(), // add setup file for vitest
   scripts: z.boolean().optional(), // add scripts to package.json (and install tsx)
-  // disable threads for vitest (used by draaw)
+  // disable threads for vitest (used by @dldc/canvas)
   // needed for canvas https://github.com/vitest-dev/vitest/issues/740
   vitestSingleThread: z.boolean().optional(),
   skipLibCheck: z.boolean().optional(), // add skipLibCheck to tsconfig
-  gitignore: z.array(z.string()).optional(), // add to .gitignore
+  gitignore: z.array(z.string()).optional(), // stuff to add to .gitignore
   keep: z.array(z.string()).optional(), // files / folders to keep
+  monorepo: z.array(z.string()).optional().nullable(), // monorepo packages glob
 });
 
 export type IDldcConfig = z.infer<typeof DldcConfigSchema>;

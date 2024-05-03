@@ -27,6 +27,7 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
       type: 'git',
       url: `git+https://github.com/${pkg.base.org}/${pkg.base.repository}.git`,
     },
+    packageManager: 'pnpm@9.0.6',
     license: 'MIT',
     author: 'Etienne Dldc <e.deladonchamps@gmail.com>',
     sideEffects: false,
@@ -61,7 +62,6 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
     dependencies: prevPackageJson.dependencies,
     peerDependencies: prevPackageJson.peerDependencies,
     devDependencies,
-    packageManager: 'pnpm@8.9.0',
     publishConfig: {
       access: 'public',
       registry: 'https://registry.npmjs.org',

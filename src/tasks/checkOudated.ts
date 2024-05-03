@@ -18,6 +18,7 @@ export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
   const oudatedStr = (await $$({ reject: false })`pnpm outdated ${oudatedPatterns} --format json`).stdout;
   const oudated = JSON.parse(oudatedStr) as Record<string, OudatedData>;
   const oudatedEntries = Object.entries(oudated);
+  let skippped = false;
   if (oudatedEntries.length > 0) {
     const outdatedDev = oudatedEntries.filter(([, { dependencyType }]) => dependencyType === 'devDependencies');
     const outdatedOther = oudatedEntries.filter(([, { dependencyType }]) => dependencyType !== 'devDependencies');
@@ -34,18 +35,22 @@ export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
         outdatedLogger.log(`${name}: ${pc.red(current)} -> ${pc.green(latest)}`);
       });
     }
-    const action = await expand(logger, {
-      message: `Oudated dependencies (${oudatedEntries.length})`,
-      choices: [
-        { key: 'r', name: 'Retry', value: 'retry' },
-        { key: 's', name: 'Skip', value: 'skip' },
-        { key: 'u', name: 'Update', value: 'update' },
-      ],
-    });
+    const action =
+      pkg.globalConfig.runMode === 'skip'
+        ? 'skip'
+        : await expand(logger, {
+            message: `Oudated dependencies (${oudatedEntries.length})`,
+            choices: [
+              { key: 'r', name: 'Retry', value: 'retry' },
+              { key: 's', name: 'Skip', value: 'skip' },
+              { key: 'u', name: 'Update', value: 'update' },
+            ],
+          });
     switch (action) {
       case 'retry':
         throw RETRY_NOW;
       case 'skip':
+        skippped = true;
         break;
       case 'update': {
         await updateDependencies(pkg);
@@ -55,7 +60,11 @@ export async function checkOudated(pkg: PkgStack): Promise<PkgStack> {
     return pkg;
   }
 
-  logger.log(`${pc.blue('◆')} Deps are up to date`);
+  if (skippped) {
+    logger.log(`${pc.blue('◆')} Skipped oudated`);
+  } else {
+    logger.log(`${pc.blue('◆')} Deps are up to date`);
+  }
   return pkg;
 }
 

@@ -14,17 +14,20 @@ export async function checkPendingRelease(pkg: PkgStack): Promise<PkgStack> {
     const releaseLogger = logger.child('  ');
     result.stdout.split('\n').forEach((line) => releaseLogger.log(line));
 
-    const action = await select(logger, {
-      message: `Pending release`,
-      choices: [
-        { value: 'patch', name: 'Patch' },
-        { value: 'minor', name: 'Minor' },
-        { value: 'major', name: 'Major' },
-        new Separator(),
-        { value: 'retry', name: 'Retry' },
-        { value: 'skip', name: 'Skip' },
-      ] as const,
-    });
+    const action =
+      pkg.globalConfig.runMode === 'skip'
+        ? 'skip'
+        : await select(logger, {
+            message: `Pending release`,
+            choices: [
+              { value: 'patch', name: 'Patch' },
+              { value: 'minor', name: 'Minor' },
+              { value: 'major', name: 'Major' },
+              new Separator(),
+              { value: 'retry', name: 'Retry' },
+              { value: 'skip', name: 'Skip' },
+            ] as const,
+          });
 
     if (action === 'retry') {
       throw RETRY_NOW;

@@ -21,22 +21,27 @@ export async function checkCleanGig(pkg: PkgStack, { silent = false }: IConfig =
   const { stdout: gitStatus } = await $$`git status --porcelain --branch`;
   const [branchStatus, ...files] = gitStatus.trim().split('\n');
   const pullPush = branchStatus.replace('## main...origin/main', '').trim();
+  let skipped = false;
   if (files.length > 0) {
     logger.log(`${pc.red('◆')} Uncommited changes`);
     const fileLogger = logger.child('  ');
     files.forEach((file) => fileLogger.log(pc.red(file)));
-    const action = await expand(logger, {
-      message: `Uncommited changes (${files.length} files)`,
-      choices: [
-        { key: 'r', name: 'Retry', value: 'retry' },
-        { key: 's', name: 'Skip', value: 'skip' },
-        { key: 'c', name: 'Commit', value: 'commit' },
-      ],
-    });
+    const action =
+      pkg.globalConfig.runMode === 'skip'
+        ? 'skip'
+        : await expand(logger, {
+            message: `Uncommited changes (${files.length} files)`,
+            choices: [
+              { key: 'r', name: 'Retry', value: 'retry' },
+              { key: 's', name: 'Skip', value: 'skip' },
+              { key: 'c', name: 'Commit', value: 'commit' },
+            ],
+          });
     switch (action) {
       case 'retry':
         throw RETRY_NOW;
       case 'skip':
+        skipped = true;
         break;
       case 'commit': {
         await commit(pkg);
@@ -58,6 +63,7 @@ export async function checkCleanGig(pkg: PkgStack, { silent = false }: IConfig =
       case 'retry':
         throw RETRY;
       case 'skip':
+        skipped = true;
         break;
       case 'pull-push':
         await pushPull(pkg);
@@ -65,7 +71,11 @@ export async function checkCleanGig(pkg: PkgStack, { silent = false }: IConfig =
     }
   }
   if (!silent) {
-    logger.log(`${pc.blue('◆')} Repo is clean`);
+    if (skipped) {
+      logger.log(`${pc.blue('◆')} Skipped`);
+    } else {
+      logger.log(`${pc.blue('◆')} Repo is clean`);
+    }
   }
   return pkg;
 }

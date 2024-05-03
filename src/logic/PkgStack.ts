@@ -19,6 +19,7 @@ export interface IPkgBase {
 
 export interface TGlobalConfig {
   lastCommitMessage?: string;
+  runMode: 'ask' | 'skip';
 }
 
 export const PkgBaseKey = Key.create<IPkgBase>('PkgBase');

@@ -7,7 +7,7 @@ import { Logger } from './utils/logger';
 main().catch(console.error);
 
 async function main() {
-  const globalConfig: TGlobalConfig = {};
+  const globalConfig: TGlobalConfig = { runMode: 'ask' };
 
   const logger = Logger.create();
   const message = await input(logger, { message: 'Commit message' });

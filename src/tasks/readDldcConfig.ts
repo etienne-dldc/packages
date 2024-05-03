@@ -12,6 +12,7 @@ const DEFAULT_DLDC_CONFIG: IDldcConfigResolved = {
   skipLibCheck: false,
   gitignore: [],
   keep: [],
+  monorepo: null,
 };
 
 export const DldcConfigKey = Key.create<IDldcConfigResolved>('DldcConfig');

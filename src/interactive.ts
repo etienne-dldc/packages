@@ -26,11 +26,13 @@ main().catch(console.error);
 async function main() {
   const logger = Logger.create();
 
-  const globalConfig: TGlobalConfig = {};
-
   const packagesToCheck = await selectPackages(logger);
-
   logger.log(`${pc.blue('◆')} ${packagesToCheck.length} packages`);
+
+  const runMode = await selectRunMode(logger);
+  logger.log(`${pc.blue('◆')} running in "${runMode}" mode`);
+
+  const globalConfig: TGlobalConfig = { runMode };
 
   // All packages
   const pkgsBase = packagesToCheck
@@ -97,4 +99,16 @@ async function selectPackages(logger: ILogger): Promise<readonly IPackage[]> {
     choices: packages.map((pkg) => ({ name: pkg.repository, value: pkg })),
   });
   return packages.slice(packages.indexOf(start));
+}
+
+async function selectRunMode(logger: ILogger): Promise<'ask' | 'skip'> {
+  const mode = await expand(logger, {
+    message: 'Select run mode',
+    expanded: true,
+    choices: [
+      { key: 'a', name: 'Ask', value: 'ask' },
+      { key: 's', name: 'Skip', value: 'skip' },
+    ],
+  });
+  return mode;
 }
