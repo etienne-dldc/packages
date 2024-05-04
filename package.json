@@ -13,6 +13,7 @@
   "author": "Etienne Dldc <e.deladonchamps@gmail.com>",
   "scripts": {
     "commit-all": "tsx ./src/commit-all.ts",
+    "run-in-all": "tsx ./src/run-in-all.ts",
     "interactive": "tsx ./src/interactive.ts",
     "reset-all": "tsx ./src/reset-all.ts",
     "typecheck": "tsc",

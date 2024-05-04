@@ -13,19 +13,21 @@ export async function checkDependencies(pkg: PkgStack): Promise<PkgStack> {
   const { logger } = pkg.base;
 
   const devDependenciesKeys = new Set([
-    '@types/node',
-    '@typescript-eslint/eslint-plugin',
-    '@typescript-eslint/parser',
-    '@vitest/coverage-v8',
-    'auto-changelog',
-    'eslint-config-prettier',
-    'release-it',
+    // eslint
+    '@eslint/js',
     'eslint',
+    'typescript-eslint',
+    // vitest
+    'vitest',
+    '@vitest/coverage-v8',
+    // other
+    'typescript',
+    '@types/node',
+    'auto-changelog',
+    'release-it',
     'prettier',
     'rimraf',
     'tsup',
-    'typescript',
-    'vitest',
     ...(dldcConfig.viteExample ? ['vite'] : []),
     ...Object.keys(prevPackageJson.peerDependencies ?? {}),
     ...dldcConfig.additionalDevDependencies,
@@ -62,6 +64,7 @@ export async function checkDependencies(pkg: PkgStack): Promise<PkgStack> {
 
   if (missingDevDeps.length > 0) {
     logger.log(`${pc.red('◆')} Missing devDependencies: ${missingDevDeps.join(', ')}`);
+    logger.log(pc.gray(`  pnpm add -D ${missingDevDeps.join(' ')}`));
     throw RETRY;
   }
   return pkg.with(DevDepsKey.Provider(devDependencies));

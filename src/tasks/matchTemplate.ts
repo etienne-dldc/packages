@@ -3,10 +3,12 @@ import { readFile, rm, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 import pc from 'picocolors';
 import sortPackageJson from 'sort-package-json';
+import { createEslintConfig } from '../generate/createEslintConfig';
 import { createPackageJson } from '../generate/createPackageJson';
 import { createTsconfig } from '../generate/createTsconfig';
 import { createVitestConfig } from '../generate/createVitestConfig';
 import { PkgStack } from '../logic/PkgStack';
+import { prettierConfig } from '../logic/prettierConfig';
 import { copyAll } from '../utils/copyAll';
 import { saveFile } from '../utils/saveFile';
 import { DldcConfigKey } from './readDldcConfig';
@@ -26,6 +28,7 @@ export async function matchTemplate(pkg: PkgStack): Promise<PkgStack> {
     'src',
     'tests',
     'README.md',
+    '.dldc.json',
     rebuildLockfile ? null : 'pnpm-lock.yaml',
     'design',
     forceInstall ? null : 'node_modules',
@@ -52,6 +55,11 @@ export async function matchTemplate(pkg: PkgStack): Promise<PkgStack> {
   // Create vitest.config.ts
   const vitestConfig = createVitestConfig(dldcConfig);
   await saveFile(folder, 'vitest.config.ts', vitestConfig);
+  // Create eslint.config.js
+  const eslintConfig = createEslintConfig(dldcConfig);
+  await saveFile(folder, 'eslint.config.js', eslintConfig);
+  // Create .prettierrc.json
+  await saveFile(folder, '.prettierrc.json', JSON.stringify(prettierConfig, null, 2));
   // add custom gitignore entries
   if (dldcConfig.gitignore.length > 0) {
     const gitignorePath = resolve(folder, '.gitignore');

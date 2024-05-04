@@ -1,4 +1,4 @@
-import { IDldcConfigResolved } from '../tasks/readPackageJson';
+import { IDldcConfigResolved } from '../tasks/readDldcConfig';
 import { json } from '../utils/json';
 
 export function createVitestConfig(dldcConfig: IDldcConfigResolved) {

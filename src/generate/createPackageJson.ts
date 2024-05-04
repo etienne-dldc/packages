@@ -1,10 +1,8 @@
 import { PkgStack } from '../logic/PkgStack';
 import { IPackageJsonFixed } from '../logic/packageJson';
-import { prettierConfig } from '../logic/prettierConfig';
 import { DevDepsKey } from '../tasks/checkDependencies';
 import { DldcConfigKey } from '../tasks/readDldcConfig';
 import { PackageJsonKey } from '../tasks/readPackageJson';
-import { createEslintConfig } from './createEslintConfig';
 
 export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
   const prevPackageJson = pkg.getOrFail(PackageJsonKey.Consumer);
@@ -65,24 +63,6 @@ export function createPackageJson(pkg: PkgStack): IPackageJsonFixed {
     publishConfig: {
       access: 'public',
       registry: 'https://registry.npmjs.org',
-    },
-    eslintConfig: createEslintConfig(dldcConfig),
-    dldc: prevPackageJson.dldc,
-    prettier: prettierConfig,
-    'release-it': {
-      hooks: {
-        'before:init': ['pnpm run build', 'pnpm test'],
-      },
-      npm: {
-        publish: true,
-      },
-      git: {
-        changelog: 'pnpm run --silent changelog',
-      },
-      github: {
-        release: true,
-        web: true,
-      },
     },
   };
 }

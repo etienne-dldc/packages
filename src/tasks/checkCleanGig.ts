@@ -90,6 +90,9 @@ async function commit(pkg: PkgStack) {
   });
   pkg.globalConfig.lastCommitMessage = message;
   await $$`git commit -m ${message}`;
+  logger.log(`${pc.green('◆')} Created commit`);
+  await $$`git push`;
+  logger.log(`${pc.green('◆')} Commit pushed`);
   return pkg;
 }
 

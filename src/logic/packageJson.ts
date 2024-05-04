@@ -1,5 +1,4 @@
 import { PackageJson } from 'types-package-json';
-import { IDldcConfig } from '../tasks/readPackageJson';
 
 export interface IPackageJsonFixed extends PackageJson {
   sideEffects: boolean;
@@ -11,8 +10,4 @@ export interface IPackageJsonFixed extends PackageJson {
     access: string;
     registry: string;
   };
-  'release-it': any;
-  eslintConfig: any;
-  prettier: any;
-  dldc?: IDldcConfig;
 }
