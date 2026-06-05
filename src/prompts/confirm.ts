@@ -1,12 +1,15 @@
-import confirmBase from '@inquirer/confirm';
-import { ILogger } from '../utils/logger';
+import confirmBase from "@inquirer/confirm";
+import { ILogger } from "../utils/logger.ts";
 
 interface ConfirmConfig {
   default?: boolean;
   message: string;
 }
 
-export function confirm(logger: ILogger, config: ConfirmConfig): Promise<boolean> {
+export function confirm(
+  logger: ILogger,
+  config: ConfirmConfig,
+): Promise<boolean> {
   return confirmBase({
     ...config,
     theme: {

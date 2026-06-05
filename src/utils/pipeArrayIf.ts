@@ -4,7 +4,9 @@ export interface IPipeArrayIfConfig<T> {
   steps: (((value: T) => Promise<T> | T) | null)[];
 }
 
-export async function pipeArrayIf<T>({ initial, condition, steps }: IPipeArrayIfConfig<T>): Promise<T[]> {
+export async function pipeArrayIf<T>(
+  { initial, condition, steps }: IPipeArrayIfConfig<T>,
+): Promise<T[]> {
   const result: T[] = [];
   item: for (const value of initial) {
     let current: T = value;

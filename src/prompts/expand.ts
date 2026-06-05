@@ -1,5 +1,5 @@
-import expandBase from '@inquirer/expand';
-import { ILogger } from '../utils/logger';
+import expandBase from "@inquirer/expand";
+import { ILogger } from "../utils/logger.ts";
 
 type ExpandChoice<T extends string> = { key: string; name: string; value: T };
 
@@ -10,7 +10,10 @@ interface ExpandConfig<T extends string> {
   expanded?: boolean;
 }
 
-export async function expand<T extends string>(logger: ILogger, config: ExpandConfig<T>): Promise<T> {
+export async function expand<T extends string>(
+  logger: ILogger,
+  config: ExpandConfig<T>
+): Promise<T> {
   const result = await expandBase({
     ...config,
     theme: {

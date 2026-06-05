@@ -1,0 +1,26 @@
+{
+  "tasks": {
+    "run:interactive": "deno run -A ./src/interactive.ts",
+    "check": "deno lint && deno fmt --check && deno test"
+  },
+  "imports": {
+    "@dldc/stack": "jsr:@dldc/stack@^7.0.0",
+    "@inquirer/confirm": "npm:@inquirer/confirm@^5.1.18",
+    "@inquirer/expand": "npm:@inquirer/expand@^4.0.20",
+    "@inquirer/input": "npm:@inquirer/input@^4.2.4",
+    "@inquirer/select": "npm:@inquirer/select@^4.3.4",
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@std/path": "jsr:@std/path@^1.1.2",
+    "@valibot/valibot": "jsr:@valibot/valibot@^1.1.0",
+    "execa": "npm:execa@^9.6.0",
+    "picocolors": "npm:picocolors@^1.1.1",
+    "sort-package-json": "npm:sort-package-json@^3.4.0",
+    "types-package-json": "npm:types-package-json@^2.0.39"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-explicit-any"]
+    }
+  }
+}

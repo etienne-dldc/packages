@@ -1,7 +1,7 @@
-import { pipeIf } from './pipeIf';
+import { pipeIf } from "./pipeIf";
 
-export const RETRY = Symbol('RETRY');
-export const RETRY_NOW = Symbol('RETRY_NOW');
+export const RETRY = Symbol("RETRY");
+export const RETRY_NOW = Symbol("RETRY_NOW");
 
 export interface IPipeIfWithRetryConfig<T> {
   condition: (value: T) => boolean;

@@ -1,5 +1,5 @@
-import selectBase, { Separator } from '@inquirer/select';
-import { ILogger } from '../utils/logger';
+import selectBase, { Separator } from "@inquirer/select";
+import { ILogger } from "../utils/logger.ts";
 
 interface Choice<Value> {
   value: Value;
@@ -17,7 +17,10 @@ interface SelectConfig<Value> {
   default?: unknown;
 }
 
-export function select<Value>(logger: ILogger, config: SelectConfig<Value>): Promise<Value> {
+export function select<Value>(
+  logger: ILogger,
+  config: SelectConfig<Value>,
+): Promise<Value> {
   return selectBase({
     ...config,
     theme: {

@@ -18,10 +18,12 @@ export const Logger = (() => {
     create: createLogger,
   };
 
-  function createLogger({ deffered = false, header }: ILoggerOptions = {}): ILogger {
+  function createLogger(
+    { deffered = false, header }: ILoggerOptions = {},
+  ): ILogger {
     let buffer: string[] = [];
 
-    return child('', header);
+    return child("", header);
 
     function commit() {
       for (const message of buffer) {
@@ -61,9 +63,9 @@ export const Logger = (() => {
 
       function format(message: string) {
         return message
-          .split('\n')
+          .split("\n")
           .map((line) => prefix + line)
-          .join('\n');
+          .join("\n");
       }
     }
   }

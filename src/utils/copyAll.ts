@@ -1,5 +1,5 @@
-import { cp, readdir } from 'fs/promises';
-import { resolve } from 'path';
+import { cp, readdir } from "fs/promises";
+import { resolve } from "path";
 
 /**
  * Copy each file from source to dest

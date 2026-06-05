@@ -1,9 +1,9 @@
-import { Key, Stack, TStackCoreValue } from '@dldc/stack';
-import { $, Execa$ } from 'execa';
-import { relative, resolve } from 'path';
-import pc from 'picocolors';
-import { IPackage, Org } from '../packages';
-import { ILogger } from '../utils/logger';
+import { createKey, Stack, TStackCoreValue } from "@dldc/stack";
+import { relative, resolve } from "@std/path";
+import { execa, ExecaMethod, Options } from "execa";
+import pc from "picocolors";
+import { IPackage, Org } from "../packages.ts";
+import { ILogger } from "../utils/logger.ts";
 
 export interface IPkgBase {
   readonly repository: string;
@@ -13,26 +13,30 @@ export interface IPkgBase {
   readonly folder: string;
   readonly relativeFolder: string;
   readonly coloredName: string;
-  readonly $$: Execa$;
+  readonly $$: ExecaMethod;
   readonly logger: ILogger;
 }
 
 export interface TGlobalConfig {
   lastCommitMessage?: string;
-  runMode: 'ask' | 'skip';
+  runMode: "ask" | "skip";
 }
 
-export const PkgBaseKey = Key.create<IPkgBase>('PkgBase');
-export const SkippedKey = Key.create<boolean>('Skipped');
-export const GlobalConfigKey = Key.create<TGlobalConfig>('GlobalConfig');
+export const PkgBaseKey = createKey<IPkgBase>("PkgBase");
+export const SkippedKey = createKey<boolean>("Skipped");
+export const GlobalConfigKey = createKey<TGlobalConfig>("GlobalConfig");
 
 export class PkgStack extends Stack {
-  static create(logger: ILogger, pkg: IPackage, globalConfig: TGlobalConfig): PkgStack {
+  static create(
+    logger: ILogger,
+    pkg: IPackage,
+    globalConfig: TGlobalConfig
+  ): PkgStack {
     const base = pkgBase(logger, pkg);
     return new PkgStack().with(
       PkgBaseKey.Provider(base),
       SkippedKey.Provider(base.disabled),
-      GlobalConfigKey.Provider(globalConfig),
+      GlobalConfigKey.Provider(globalConfig)
     );
   }
 
@@ -52,18 +56,22 @@ export class PkgStack extends Stack {
     return this.with(SkippedKey.Provider(true));
   }
 
-  protected instantiate(stackCore: TStackCoreValue): this {
+  protected override instantiate(stackCore: TStackCoreValue): this {
     return new PkgStack(stackCore) as any;
   }
 }
 
 function pkgBase(parentLogger: ILogger, pkg: IPackage): IPkgBase {
   const coloredName = `${pc.blue(pkg.org)}/${pc.green(pkg.repository)}`;
-  const baseDir = resolve(`${process.env.HOME}/Workspace`);
+  const baseDir = resolve(`${Deno.env.get("HOME")}/Workspace`);
   const folder = resolve(baseDir, `github.com/${pkg.org}/${pkg.repository}`);
-  const prefix = ` ${pc.gray('│')} `;
+  const prefix = ` ${pc.gray("│")} `;
   const relativeFolder = relative(baseDir, folder);
-  const logger = parentLogger.child(prefix, [coloredName, prefix + pc.gray(folder)]);
+  const logger = parentLogger.child(prefix, [
+    coloredName,
+    prefix + pc.gray(folder),
+  ]);
+  const execaOptions: Options = { cwd: folder, verbose: "short" };
   return {
     ...pkg,
     prefix,
@@ -72,6 +80,6 @@ function pkgBase(parentLogger: ILogger, pkg: IPackage): IPkgBase {
     coloredName,
     disabled: pkg.disabled ?? false,
     logger,
-    $$: $({ cwd: folder, verbose: false }),
+    $$: execa(execaOptions),
   };
 }

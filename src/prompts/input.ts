@@ -1,5 +1,5 @@
-import inputBase from '@inquirer/input';
-import { ILogger } from '../utils/logger';
+import inputBase from "@inquirer/input";
+import { ILogger } from "../utils/logger.ts";
 
 interface InputConfig {
   message: string;

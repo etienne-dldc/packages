@@ -1,16 +1,16 @@
-import pc from 'picocolors';
-import { PkgStack, TGlobalConfig } from './logic/PkgStack';
-import { packages } from './packages';
-import { input } from './prompts/input';
-import { Logger } from './utils/logger';
+import pc from "picocolors";
+import { PkgStack, TGlobalConfig } from "./logic/PkgStack";
+import { packages } from "./packages";
+import { input } from "./prompts/input";
+import { Logger } from "./utils/logger";
 
 main().catch(console.error);
 
 async function main() {
-  const globalConfig: TGlobalConfig = { runMode: 'ask' };
+  const globalConfig: TGlobalConfig = { runMode: "ask" };
 
   const logger = Logger.create();
-  const message = await input(logger, { message: 'Commit message' });
+  const message = await input(logger, { message: "Commit message" });
   for (const pkgBase of packages) {
     const pkg = PkgStack.create(logger, pkgBase, globalConfig);
     logger.log(pkg.base.coloredName);
@@ -22,13 +22,14 @@ async function commitPackage(pkg: PkgStack, message: string) {
   const { $$, logger, folder } = pkg.base;
   logger.log(`${pc.gray(folder)}`);
   if (pkg.skipped) {
-    logger.log(`${pc.red('◆')} Disabled`);
+    logger.log(`${pc.red("◆")} Disabled`);
     return;
   }
 
-  const isClean = async () => (await $$`git status --porcelain`).stdout.trim() === '';
+  const isClean = async () =>
+    (await $$`git status --porcelain`).stdout.trim() === "";
   if (await isClean()) {
-    logger.log(`${pc.green('●')} No changes`);
+    logger.log(`${pc.green("●")} No changes`);
     return;
   }
   logger.log(`Commit`);
@@ -36,5 +37,5 @@ async function commitPackage(pkg: PkgStack, message: string) {
   await $$`git commit -m ${message}`;
   logger.log(`Push`);
   await $$`git push`;
-  logger.log(`${pc.green('●')} Done`);
+  logger.log(`${pc.green("●")} Done`);
 }

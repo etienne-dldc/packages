@@ -1,17 +1,14 @@
-import { readdir } from 'fs-extra';
-import { readFile, rm, writeFile } from 'fs/promises';
-import { resolve } from 'path';
-import pc from 'picocolors';
-import sortPackageJson from 'sort-package-json';
-import { createEslintConfig } from '../generate/createEslintConfig';
-import { createPackageJson } from '../generate/createPackageJson';
-import { createTsconfig } from '../generate/createTsconfig';
-import { createVitestConfig } from '../generate/createVitestConfig';
-import { PkgStack } from '../logic/PkgStack';
-import { prettierConfig } from '../logic/prettierConfig';
-import { copyAll } from '../utils/copyAll';
-import { saveFile } from '../utils/saveFile';
-import { DldcConfigKey } from './readDldcConfig';
+import { resolve } from "@std/path";
+import pc from "picocolors";
+import sortPackageJson from "sort-package-json";
+import { createEslintConfig } from "../generate/createEslintConfig.ts";
+import { createPackageJson } from "../generate/createPackageJson.ts";
+import { createTsconfig } from "../generate/createTsconfig.ts";
+import { createVitestConfig } from "../generate/createVitestConfig.ts";
+import { PkgStack } from "../logic/PkgStack.ts";
+import { copyAll } from "../utils/copyAll.ts";
+import { saveFile } from "../utils/saveFile.ts";
+import { DldcConfigKey } from "./readDldcConfig.ts";
 
 /**
  * Make sure the repo match the template
@@ -24,16 +21,16 @@ export async function matchTemplate(pkg: PkgStack): Promise<PkgStack> {
   const forceInstall = false;
 
   const KEEP_FILES = [
-    '.git',
-    'src',
-    'tests',
-    'README.md',
-    '.dldc.json',
-    rebuildLockfile ? null : 'pnpm-lock.yaml',
-    'design',
-    forceInstall ? null : 'node_modules',
-    dldcConfig.viteExample ? 'example' : null,
-    dldcConfig.scripts ? 'scripts' : null,
+    ".git",
+    "src",
+    "tests",
+    "README.md",
+    ".dldc.json",
+    rebuildLockfile ? null : "pnpm-lock.yaml",
+    "design",
+    forceInstall ? null : "node_modules",
+    dldcConfig.viteExample ? "example" : null,
+    dldcConfig.scripts ? "scripts" : null,
     ...dldcConfig.keep,
   ].filter(Boolean);
 
@@ -44,35 +41,43 @@ export async function matchTemplate(pkg: PkgStack): Promise<PkgStack> {
     await rm(resolve(folder, file), { recursive: true, force: true });
   }
   // copy all files from template
-  const templateFolder = resolve('template');
+  const templateFolder = resolve("template");
   await copyAll(templateFolder, folder);
   // create package.json
   const newPackageJson = createPackageJson(pkg);
-  await saveFile(folder, 'package.json', sortPackageJson(JSON.stringify(newPackageJson, null, 2)));
+  await saveFile(
+    folder,
+    "package.json",
+    sortPackageJson(JSON.stringify(newPackageJson, null, 2))
+  );
   // create tsconfig.json
   const tsconfigFile = createTsconfig(dldcConfig);
-  await saveFile(folder, 'tsconfig.json', tsconfigFile);
+  await saveFile(folder, "tsconfig.json", tsconfigFile);
   // Create vitest.config.ts
   const vitestConfig = createVitestConfig(dldcConfig);
-  await saveFile(folder, 'vitest.config.ts', vitestConfig);
+  await saveFile(folder, "vitest.config.ts", vitestConfig);
   // Create eslint.config.js
   const eslintConfig = createEslintConfig(dldcConfig);
-  await saveFile(folder, 'eslint.config.js', eslintConfig);
+  await saveFile(folder, "eslint.config.js", eslintConfig);
   // Create .prettierrc.json
-  await saveFile(folder, '.prettierrc.json', JSON.stringify(prettierConfig, null, 2));
+  await saveFile(
+    folder,
+    ".prettierrc.json",
+    JSON.stringify(prettierConfig, null, 2)
+  );
   // add custom gitignore entries
   if (dldcConfig.gitignore.length > 0) {
-    const gitignorePath = resolve(folder, '.gitignore');
-    const gitignoreStr = await readFile(gitignorePath, 'utf-8');
-    const gitignoreLines = gitignoreStr.split('\n');
+    const gitignorePath = resolve(folder, ".gitignore");
+    const gitignoreStr = await readFile(gitignorePath, "utf-8");
+    const gitignoreLines = gitignoreStr.split("\n");
     const newGitignoreLines = [...gitignoreLines, ...dldcConfig.gitignore];
-    await writeFile(gitignorePath, newGitignoreLines.join('\n'));
+    await writeFile(gitignorePath, newGitignoreLines.join("\n"));
   }
 
   // Install deps
   await $$`pnpm i`;
 
-  logger.log(`${pc.blue('◆')} Template initialized`);
+  logger.log(`${pc.blue("◆")} Template initialized`);
 
   return pkg;
 }

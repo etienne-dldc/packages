@@ -1,25 +1,25 @@
-import pc from 'picocolors';
-import { PkgStack, TGlobalConfig } from './logic/PkgStack';
-import { IPackage, packages } from './packages';
-import { confirm } from './prompts/confirm';
-import { expand } from './prompts/expand';
-import { select } from './prompts/select';
-import { checkBuild } from './tasks/checkBuild';
-import { checkCleanGig } from './tasks/checkCleanGig';
-import { checkDependencies } from './tasks/checkDependencies';
-import { checkLinting } from './tasks/checkLinting';
-import { checkOudated } from './tasks/checkOudated';
-import { checkPackageOrder } from './tasks/checkPackageOrder';
-import { checkPendingRelease } from './tasks/checkPendingRelease';
-import { checkTests } from './tasks/checkTests';
-import { checkTypes } from './tasks/checkTypes';
-import { ensureCloned } from './tasks/ensureCloned';
-import { matchTemplate } from './tasks/matchTemplate';
-import { readDldcConfig } from './tasks/readDldcConfig';
-import { readPackageJson } from './tasks/readPackageJson';
-import { asyncMap } from './utils/asyncMap';
-import { ILogger, Logger } from './utils/logger';
-import { pipeIfWithRetry } from './utils/pipeIfWithRetry';
+import pc from "picocolors";
+import { PkgStack, TGlobalConfig } from "./logic/PkgStack.ts";
+import { IPackage, packages } from "./packages.ts";
+import { confirm } from "./prompts/confirm.ts";
+import { expand } from "./prompts/expand.ts";
+import { select } from "./prompts/select.ts";
+import { checkBuild } from "./tasks/checkBuild.ts";
+import { checkCleanGig } from "./tasks/checkCleanGig.ts";
+import { checkDependencies } from "./tasks/checkDependencies.ts";
+import { checkLinting } from "./tasks/checkLinting.ts";
+import { checkOudated } from "./tasks/checkOudated.ts";
+import { checkPackageOrder } from "./tasks/checkPackageOrder.ts";
+import { checkPendingRelease } from "./tasks/checkPendingRelease.ts";
+import { checkTests } from "./tasks/checkTests.ts";
+import { checkTypes } from "./tasks/checkTypes.ts";
+import { ensureCloned } from "./tasks/ensureCloned.ts";
+import { matchTemplate } from "./tasks/matchTemplate.ts";
+import { readDldcConfig } from "./tasks/readDldcConfig.ts";
+import { readPackageJson } from "./tasks/readPackageJson.ts";
+import { asyncMap } from "./utils/asyncMap.ts";
+import { ILogger, Logger } from "./utils/logger.ts";
+import { pipeIfWithRetry } from "./utils/pipeIfWithRetry.ts";
 
 main().catch(console.error);
 
@@ -27,10 +27,10 @@ async function main() {
   const logger = Logger.create();
 
   const packagesToCheck = await selectPackages(logger);
-  logger.log(`${pc.blue('◆')} ${packagesToCheck.length} packages`);
+  logger.log(`${pc.blue("◆")} ${packagesToCheck.length} packages`);
 
   const runMode = await selectRunMode(logger);
-  logger.log(`${pc.blue('◆')} running in "${runMode}" mode`);
+  logger.log(`${pc.blue("◆")} running in "${runMode}" mode`);
 
   const globalConfig: TGlobalConfig = { runMode };
 
@@ -38,7 +38,7 @@ async function main() {
   const pkgsBase = packagesToCheck
     .map((pkg) => PkgStack.create(logger, pkg, globalConfig))
     .filter((pkg) => !pkg.skipped);
-  const pkgsCloned = await asyncMap(pkgsBase, async (pkg) => ensureCloned(pkg));
+  const pkgsCloned = await asyncMap(pkgsBase, (pkg) => ensureCloned(pkg));
   pkgsCloned.forEach((pkg) => pkg.base.logger.reset());
   const pkgsReady = await pipeIfWithRetry(pkgsCloned, {
     condition: (pkg) => skippedCondition(pkg),
@@ -65,13 +65,16 @@ async function main() {
     ],
     onRetry: onError,
   });
-  logger.log(`${pc.blue('◆')} Done (${pkgsDone.length} packages)`);
+  logger.log(`${pc.blue("◆")} Done (${pkgsDone.length} packages)`);
 }
 
-function skippedCondition(pkg: PkgStack, { silent = false }: { silent?: boolean } = {}) {
+function skippedCondition(
+  pkg: PkgStack,
+  { silent = false }: { silent?: boolean } = {}
+) {
   if (pkg.skipped) {
     if (!silent) {
-      pkg.base.logger.log(`${pc.red('◆ Skipped')} ${pkg.base.coloredName}`);
+      pkg.base.logger.log(`${pc.red("◆ Skipped")} ${pkg.base.coloredName}`);
     }
     return false;
   }
@@ -84,30 +87,30 @@ async function onError(pkg: PkgStack) {
 
 async function selectPackages(logger: ILogger): Promise<readonly IPackage[]> {
   const mode = await expand(logger, {
-    message: 'Select mode',
+    message: "Select mode",
     expanded: true,
     choices: [
-      { key: 'a', name: 'All', value: 'all' },
-      { key: 's', name: 'Select', value: 'select' },
+      { key: "a", name: "All", value: "all" },
+      { key: "s", name: "Select", value: "select" },
     ],
   });
-  if (mode === 'all') {
+  if (mode === "all") {
     return packages;
   }
   const start = await select(logger, {
-    message: 'Select start package',
+    message: "Select start package",
     choices: packages.map((pkg) => ({ name: pkg.repository, value: pkg })),
   });
   return packages.slice(packages.indexOf(start));
 }
 
-async function selectRunMode(logger: ILogger): Promise<'ask' | 'skip'> {
+async function selectRunMode(logger: ILogger): Promise<"ask" | "skip"> {
   const mode = await expand(logger, {
-    message: 'Select run mode',
+    message: "Select run mode",
     expanded: true,
     choices: [
-      { key: 'a', name: 'Ask', value: 'ask' },
-      { key: 's', name: 'Skip', value: 'skip' },
+      { key: "a", name: "Ask", value: "ask" },
+      { key: "s", name: "Skip", value: "skip" },
     ],
   });
   return mode;

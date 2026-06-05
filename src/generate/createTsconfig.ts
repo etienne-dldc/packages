@@ -1,27 +1,27 @@
-import { IDldcConfigResolved } from '../tasks/readDldcConfig';
-import { json } from '../utils/json';
+import { IDldcConfigResolved } from "../tasks/readDldcConfig";
+import { json } from "../utils/json";
 
 export function createTsconfig(dldcConfig: IDldcConfigResolved): string {
   return json({
-    $schema: 'https://json.schemastore.org/tsconfig',
+    $schema: "https://json.schemastore.org/tsconfig",
     include: [
-      'src',
-      'tests',
-      'vitest.config.ts',
-      ...(dldcConfig.viteExample ? ['example', 'vite.config.ts'] : []),
-      dldcConfig.scripts && 'scripts',
+      "src",
+      "tests",
+      "vitest.config.ts",
+      ...(dldcConfig.viteExample ? ["example", "vite.config.ts"] : []),
+      dldcConfig.scripts && "scripts",
     ].filter(Boolean),
     compilerOptions: {
-      rootDir: '.',
+      rootDir: ".",
 
-      outDir: 'dist',
-      target: 'ESNext',
-      module: 'ES2020',
-      lib: ['ESNext', 'DOM', 'DOM.Iterable'],
+      outDir: "dist",
+      target: "ESNext",
+      module: "ES2020",
+      lib: ["ESNext", "DOM", "DOM.Iterable"],
       importHelpers: false,
-      moduleResolution: 'node',
+      moduleResolution: "node",
       esModuleInterop: true,
-      ...(dldcConfig.react ? { jsx: 'react-jsx' } : {}),
+      ...(dldcConfig.react ? { jsx: "react-jsx" } : {}),
 
       isolatedModules: true,
       declaration: true,
